@@ -35,7 +35,7 @@ class MindmapDialog(QDialog):
 
         # add deck picker
         self.deck_picker = QComboBox()
-        deck_names = mw.col.decks.allNames()
+        deck_names = sorted(mw.col.decks.allNames())
         self.deck_picker.addItems(deck_names)
         self.deck_picker.setCurrentText(mw.col.decks.name(mw.col.decks.selected()))
         self.vbox.addWidget(self.deck_picker)
@@ -47,8 +47,14 @@ class MindmapDialog(QDialog):
     
     def _on_button_click(self):
         chosen_deck_name = self.deck_picker.currentText()
-        showInfo(chosen_deck_name)
-        main(chosen_deck_name)
+        file_name = self.saveFileDialog()
+        if file_name:
+            main(chosen_deck_name, file_name)
+            showInfo(f'{file_name} is ready')
+
+    def saveFileDialog(self):
+        file_name, _ = QFileDialog.getSaveFileName(self, "", "mindmap.png", "*.png")
+        return file_name
 
 
 def make_button(txt, f, parent):

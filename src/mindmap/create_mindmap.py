@@ -1,13 +1,12 @@
-import subprocess
+import tempfile
 
 from aqt import mw
 
+from ._vendor.brain_dump.graphviz import create_solarized_mindmap_img
 from .util import get_notes, note_and_tag_tree
 
 ONLY_TAGS = True
 GV_ENGINE = 'twopi'
-
-MD_FILEPATH = 'tree.md'
 
 NOTE_TEXT_LENGTH_LIMIT = 80
 
@@ -21,15 +20,16 @@ def tree_to_md(tree, level=0):
     ])
 
 
-def main(deck_name):
+def main(deck_name, output_file_path):
     notes = get_notes(f'"deck:{deck_name}"', mw.col)
     tag_prefix = deck_name.split('::')[-1]
     tree = note_and_tag_tree(notes, tag_prefix=tag_prefix,
                              only_tags=ONLY_TAGS, text_length_limit=NOTE_TEXT_LENGTH_LIMIT)
     tree_md = tree_to_md(tree)
 
-    with open(MD_FILEPATH, 'w+') as f:
+    tmp_md_file = tempfile.NamedTemporaryFile()
+    with open(tmp_md_file.name, 'w') as f:
         f.write(tree_md)
 
-    # create png using graphviz_md2png
-    subprocess.call(['graphviz_md2png', MD_FILEPATH, '--layout', GV_ENGINE])
+    create_solarized_mindmap_img(tmp_md_file.name, output_file_path, layout=GV_ENGINE)
+    tmp_md_file.close()
