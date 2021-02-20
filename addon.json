@@ -1,0 +1,11 @@
+{
+    "display_name": "mindmap",
+    "module_name": "mindmap",
+    "repo_name": "Anki-Mindmap",
+    "ankiweb_id": "",
+    "author": "RisingOrange",
+    "conflicts": [],
+    "targets": [
+        "anki21"
+    ]
+}
