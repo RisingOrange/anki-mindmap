@@ -56,7 +56,7 @@ def note_text(note, length_limit=80):
     result = result.strip()
     if len(result) > length_limit:
         result = result[:length_limit] + '[...]'
-    if not result:  # NOTE if there is only on image on the front, the card will not appear on the map
+    if not result:  # NOTE if there is only an image on the front, the card will not appear on the map
         return None
 
     return result
