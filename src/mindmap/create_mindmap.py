@@ -5,7 +5,6 @@ from aqt import mw
 from ._vendor.brain_dump.graphviz import create_solarized_mindmap_img
 from .util import get_notes, note_and_tag_tree
 
-ONLY_TAGS = True
 GV_ENGINE = 'twopi'
 
 NOTE_TEXT_LENGTH_LIMIT = 80
@@ -20,10 +19,10 @@ def tree_to_md(tree, level=0):
     ])
 
 
-def create_mindmap(tag_prefix, output_file_path):
+def create_mindmap(tag_prefix, output_file_path, only_tags=True):
     notes = get_notes(f'"tag:{tag_prefix}*"', mw.col)
     tree = note_and_tag_tree(notes, tag_prefix=tag_prefix,
-                             only_tags=ONLY_TAGS, text_length_limit=NOTE_TEXT_LENGTH_LIMIT)
+                             only_tags=only_tags, text_length_limit=NOTE_TEXT_LENGTH_LIMIT)
     tree_md = tree_to_md(tree)
 
     tmp_md_file = tempfile.NamedTemporaryFile()

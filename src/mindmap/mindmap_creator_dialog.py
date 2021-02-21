@@ -9,6 +9,7 @@ from PyQt5.QtGui import *
 from PyQt5.QtWidgets import *
 
 from .create_mindmap import create_mindmap
+from .util import tag_prefixes
 
 TAG_SEPERATOR = '::'
 
@@ -44,40 +45,56 @@ class MindmapDialog(QDialog):
         self.setLayout(layout)
 
         # add tag prefix picker
-        tags = [ tag for tag in mw.col.tags.all() if TAG_SEPERATOR in tag]
-        tag_prefixes = set((
-            TAG_SEPERATOR.join(tag.split(TAG_SEPERATOR)[:i])
-            for tag in tags
-            for i in range(1, len(tag.split(TAG_SEPERATOR)))
-        ))
-        self.lineedit=QLineEdit()
-        self.lineedit.setValidator(OptionValidator(tag_prefixes))
-        self.lineedit.setCompleter(QCompleter(tag_prefixes))
-        layout.addWidget(self.lineedit)
+        self.tag_prefix_lineedit = self._setup_tag_prefix_lineedit(layout)
+
+        # add with notes checkbox
+        self.with_notes_cb = QCheckBox('include notes')
+        self.with_notes_cb.move(10, 0)
+        self.with_notes_cb.adjustSize()
+        layout.addWidget(self.with_notes_cb)
 
         # add button
-        layout.add=make_button("Draw", self._on_button_click, layout)
+        layout.add = make_button("Draw", self._on_button_click, layout)
 
+    def _setup_tag_prefix_lineedit(self, parent):
+        groupbox = QGroupBox()
+        groupbox.setLayout(QVBoxLayout())
+        parent.addWidget(groupbox)
+
+        groupbox.layout().addWidget(QLabel("Choose a tag to be in the middle of the mindmap:"))
+
+        lineedit = QLineEdit()
+        lineedit.setValidator(OptionValidator(tag_prefixes()))
+        lineedit.setCompleter(QCompleter(tag_prefixes()))
+        groupbox.layout().addWidget(lineedit)
+
+        groupbox.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
+
+        return lineedit
 
     def _on_button_click(self):
-        tag_prefix = self.lineedit.text()
-        file_name=self.saveFileDialog()
+        file_name = self.saveFileDialog()
         if file_name:
-            create_mindmap(tag_prefix, file_name)
+            create_mindmap(
+                self.tag_prefix_lineedit.text(),
+                file_name,
+                only_tags=not self.with_notes_cb.isChecked()
+            )
             showInfo(f'{file_name} is ready')
 
     def saveFileDialog(self):
-        file_name, _=QFileDialog.getSaveFileName(
+        file_name, _ = QFileDialog.getSaveFileName(
             self, "", "mindmap.png", "*.png")
         return file_name
 
 
 def make_button(txt, f, parent):
-    b=QPushButton(txt)
+    b = QPushButton(txt)
     b.clicked.connect(f)
     parent.addWidget(b)
     return b
 
+
 def show():
-    mw.mindmap_dialog=MindmapDialog(mw.app.activeWindow())
+    mw.mindmap_dialog = MindmapDialog(mw.app.activeWindow())
     mw.mindmap_dialog.show()

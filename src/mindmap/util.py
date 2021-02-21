@@ -3,6 +3,8 @@ from collections import defaultdict
 from html.parser import HTMLParser
 from io import StringIO
 
+from aqt import mw
+
 TAG_SEPERATOR = '::'
 
 
@@ -40,7 +42,7 @@ def note_and_tag_tree(notes, tag_prefix=None, only_tags=False, root_name=None, t
         for tag in note.tags:
             if not tag.startswith(tag_prefix):
                 continue
-            
+
             tag_parts = tag.split(TAG_SEPERATOR)
             prefix_tag_depth = len(tag_prefix.split(TAG_SEPERATOR))
             tag_parts = tag_parts[prefix_tag_depth-1:]
@@ -85,3 +87,13 @@ def get_notes(search_string, col=None):
     note_ids = col.find_notes(search_string)
     result = [col.getNote(id_) for id_ in note_ids]
     return result
+
+
+def tag_prefixes():
+    tags = [tag for tag in mw.col.tags.all() if TAG_SEPERATOR in tag]
+    tag_prefixes = set((
+        TAG_SEPERATOR.join(tag.split(TAG_SEPERATOR)[:i])
+        for tag in tags
+        for i in range(1, len(tag.split(TAG_SEPERATOR)))
+    ))
+    return tag_prefixes
