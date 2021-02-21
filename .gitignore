@@ -2,4 +2,3 @@ meta.json
 .vscode/*
 
 build/*
-src/mindmap/_vendor/*
