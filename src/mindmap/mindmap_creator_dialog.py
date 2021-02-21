@@ -12,23 +12,6 @@ from .util import tag_prefixes
 TAG_SEPERATOR = '::'
 
 
-class OptionValidator(QValidator):
-
-    def __init__(self, options):
-        super().__init__()
-        self.options = set(options)
-
-    def validate(self, string, pos):
-        if string in self.options:
-            return (QValidator.State.Acceptable, string, pos)
-
-        for option in self.options:
-            if option.startswith(string):
-                return (QValidator.State.Intermediate, string, pos)
-
-        return (QValidator.State.Invalid, string, pos)
-
-
 class MindmapDialog(QDialog):
 
     window_title = 'Mindmap Creator'
@@ -81,11 +64,31 @@ class MindmapDialog(QDialog):
             showInfo(f'{file_name} is ready')
 
     def saveFileDialog(self):
-        last_part_of_tag = self.tag_prefix_lineedit.text().split(TAG_SEPERATOR)[-1]
-        suggested_filename = last_part_of_tag + ('_with_notes' if self.with_notes_cb.isChecked() else '') + '.png'
+        last_part_of_tag = self.tag_prefix_lineedit.text().split(
+            TAG_SEPERATOR)[-1]
+        suggested_filename = last_part_of_tag + \
+            ('_with_notes' if self.with_notes_cb.isChecked() else '') + '.png'
         result, _ = QFileDialog.getSaveFileName(
             self, "", suggested_filename, "*.png")
         return result
+
+class OptionValidator(QValidator):
+
+    def __init__(self, options):
+        super().__init__()
+        self.options = set(options)
+
+    def validate(self, string, pos):
+        if string in self.options:
+            return (QValidator.State.Acceptable, string, pos)
+
+        for option in self.options:
+            if option.startswith(string):
+                return (QValidator.State.Intermediate, string, pos)
+
+        return (QValidator.State.Invalid, string, pos)
+
+
 
 
 def make_button(txt, f, parent):
