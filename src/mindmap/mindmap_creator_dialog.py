@@ -81,9 +81,11 @@ class MindmapDialog(QDialog):
             showInfo(f'{file_name} is ready')
 
     def saveFileDialog(self):
-        file_name, _ = QFileDialog.getSaveFileName(
-            self, "", "mindmap.png", "*.png")
-        return file_name
+        last_part_of_tag = self.tag_prefix_lineedit.text().split(TAG_SEPERATOR)[-1]
+        suggested_filename = last_part_of_tag + ('_with_notes' if self.with_notes_cb.isChecked() else '') + '.png'
+        result, _ = QFileDialog.getSaveFileName(
+            self, "", suggested_filename, "*.png")
+        return result
 
 
 def make_button(txt, f, parent):
