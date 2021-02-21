@@ -7,7 +7,7 @@ from io import StringIO
 
 from aqt import mw
 
-TAG_SEPERATOR = '::'
+from .config import cfg
 
 
 class MLStripper(HTMLParser):
@@ -41,8 +41,10 @@ def note_and_tag_tree(notes, tag_prefix=None, only_tags=False, root_name=None, t
             if not tag.startswith(tag_prefix):
                 continue
 
-            prefix_tag_depth = len(tag_prefix.split(TAG_SEPERATOR))
-            tag_parts = tag.split(TAG_SEPERATOR)[prefix_tag_depth-1:]
+            prefix_tag_depth = len(tag_prefix.split(
+                cfg('tag_seperator')))
+            tag_parts = tag.split(cfg('tag_seperator'))[
+                prefix_tag_depth-1:]
             cur = result
             for p in tag_parts:
                 cur = cur[p]
@@ -91,11 +93,13 @@ def get_notes(search_string):
 
 
 def tag_prefixes():
-    tags = [tag for tag in mw.col.tags.all() if TAG_SEPERATOR in tag]
+    tags = [tag for tag in mw.col.tags.all(
+    ) if get_config_value('get_config_value('tag_seperator')') in tag]
     tag_prefixes = set((
-        TAG_SEPERATOR.join(tag.split(TAG_SEPERATOR)[:i])
+        get_config_value('get_config_value('tag_seperator')').join(
+            tag.split(get_config_value('get_config_value('tag_seperator')'))[:i])
         for tag in tags
-        for i in range(1, len(tag.split(TAG_SEPERATOR)))
+        for i in range(1, len(tag.split(get_config_value('get_config_value('tag_seperator')'))))
     ))
     return tag_prefixes
 

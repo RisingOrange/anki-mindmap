@@ -8,8 +8,7 @@ from PyQt5.QtWidgets import *
 
 from .create_mindmap import create_mindmap
 from .util import tag_prefixes
-
-TAG_SEPERATOR = '::'
+from .config import cfg
 
 
 class MindmapDialog(QDialog):
@@ -65,12 +64,13 @@ class MindmapDialog(QDialog):
 
     def saveFileDialog(self):
         last_part_of_tag = self.tag_prefix_lineedit.text().split(
-            TAG_SEPERATOR)[-1]
+            cfg('tag_seperator'))[-1]
         suggested_filename = last_part_of_tag + \
             ('_with_notes' if self.with_notes_cb.isChecked() else '') + '.png'
         result, _ = QFileDialog.getSaveFileName(
             self, "", suggested_filename, "*.png")
         return result
+
 
 class OptionValidator(QValidator):
 
@@ -87,8 +87,6 @@ class OptionValidator(QValidator):
                 return (QValidator.State.Intermediate, string, pos)
 
         return (QValidator.State.Invalid, string, pos)
-
-
 
 
 def make_button(txt, f, parent):
