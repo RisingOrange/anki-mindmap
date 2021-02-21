@@ -1,6 +1,4 @@
-from textwrap import dedent
 
-from anki import tags
 from anki.lang import _
 from aqt import mw
 from aqt.utils import showInfo
@@ -44,16 +42,16 @@ class MindmapDialog(QDialog):
         layout = QVBoxLayout(self)
         self.setLayout(layout)
 
-        # add tag prefix picker
+        # add "tag prefix lineedit"
         self.tag_prefix_lineedit = self._setup_tag_prefix_lineedit(layout)
 
-        # add with notes checkbox
+        # add "include notes" checkbox
         self.with_notes_cb = QCheckBox('include notes')
         self.with_notes_cb.move(10, 0)
         self.with_notes_cb.adjustSize()
         layout.addWidget(self.with_notes_cb)
 
-        # add button
+        # add "Draw" button
         layout.add = make_button("Draw", self._on_button_click, layout)
 
     def _setup_tag_prefix_lineedit(self, parent):
