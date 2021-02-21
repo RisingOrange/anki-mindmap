@@ -67,6 +67,7 @@ class DarkSolarizedTheme:
             splines='curved',
             fontname=font,
             bgcolor=self.DARKGREYBLUE,
+            outputorder="edgesfirst",
         )
 
     def edge_style(self, dest_node, graph_height, hide_branches_from_id=None):
