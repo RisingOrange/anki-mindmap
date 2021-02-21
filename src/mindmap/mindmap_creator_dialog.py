@@ -66,9 +66,9 @@ class MindmapDialog(QDialog):
         last_part_of_tag = self.tag_prefix_lineedit.text().split(
             cfg('tag_seperator'))[-1]
         suggested_filename = last_part_of_tag + \
-            ('_with_notes' if self.with_notes_cb.isChecked() else '') + '.png'
+            ('_with_notes' if self.with_notes_cb.isChecked() else '') + '.svg'
         result, _ = QFileDialog.getSaveFileName(
-            self, "", suggested_filename, "*.png")
+            self, "", suggested_filename, "*.svg")
         return result
 
 

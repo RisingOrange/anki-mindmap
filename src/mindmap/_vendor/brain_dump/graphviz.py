@@ -33,7 +33,7 @@ def create_solarized_mindmap_img(input_filepath, output_file_path, layout='twopi
     graph = parse_text_graph(text, root_label=root_label)
     create_mindmap(graph, output_file_path, theme=theme, hide_branches_from_id=hide_branches_from_id, gen_dot_file=gen_dot_file)
 
-def create_mindmap(graph, output_png_path, theme, hide_branches_from_id=None, gen_dot_file=False):
+def create_mindmap(graph, output_svg_path, theme, hide_branches_from_id=None):
     graph_height = graph.height
     pygraph = pydot.Dot(root=graph.content, **theme.graph_style)
     for node in graph:
@@ -42,12 +42,7 @@ def create_mindmap(graph, output_png_path, theme, hide_branches_from_id=None, ge
         if node.parent:
             parent_content = node.parent.content if ':' not in node.parent.content else '"{}"'.format(node.parent.content)
             pygraph.add_edge(pydot.Edge(parent_content, content, **theme.edge_style(node, graph_height, hide_branches_from_id)))
-    # if gen_dot_file:
-    #     dot_outfile = '{}.dot'.format(outfile_basename)
-    #     print('Generating', dot_outfile, file=sys.stderr)
-    #     pygraph.write(dot_outfile, prog='twopi')
-    # print('Generating', png_outfile, file=sys.stderr)
-    pygraph.write_png(output_png_path, prog='twopi')
+    pygraph.write_svg(output_svg_path, prog='twopi')
 
 
 class DarkSolarizedTheme:
