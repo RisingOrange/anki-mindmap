@@ -83,9 +83,9 @@ def note_text(note, length_limit=80):
     return result
 
 
-def get_notes(search_string, col=None):
-    note_ids = col.find_notes(search_string)
-    result = [col.getNote(id_) for id_ in note_ids]
+def get_notes(search_string):
+    note_ids = mw.col.find_notes(search_string)
+    result = [mw.col.getNote(id_) for id_ in note_ids]
     return result
 
 

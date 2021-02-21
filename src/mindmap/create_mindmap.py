@@ -1,6 +1,5 @@
 import tempfile
 
-from aqt import mw
 
 from ._vendor.brain_dump.graphviz import create_solarized_mindmap_img
 from .util import get_notes, note_and_tag_tree
@@ -20,7 +19,7 @@ def tree_to_md(tree, level=0):
 
 
 def create_mindmap(tag_prefix, output_file_path, only_tags=True):
-    notes = get_notes(f'"tag:{tag_prefix}*"', mw.col)
+    notes = get_notes(f'"tag:{tag_prefix}*"')
     tree = note_and_tag_tree(notes, tag_prefix=tag_prefix,
                              only_tags=only_tags, text_length_limit=NOTE_TEXT_LENGTH_LIMIT)
     tree_md = tree_to_md(tree)
