@@ -7,7 +7,7 @@ from PyQt5.QtGui import *
 from PyQt5.QtWidgets import *
 
 from .create_mindmap import create_mindmap
-from .util import tag_prefixes
+from .anki_util import tag_prefixes
 from .config import cfg
 
 
@@ -53,7 +53,7 @@ class MindmapDialog(QDialog):
         return lineedit
 
     def _on_button_click(self):
-        file_name = self.saveFileDialog()
+        file_name = self.show_save_file_dialog()
         if file_name:
             create_mindmap(
                 self.tag_prefix_lineedit.text(),
@@ -62,7 +62,7 @@ class MindmapDialog(QDialog):
             )
             showInfo(f'{file_name} is ready')
 
-    def saveFileDialog(self):
+    def show_save_file_dialog(self):
         last_part_of_tag = self.tag_prefix_lineedit.text().split(
             cfg('tag_seperator'))[-1]
         suggested_filename = last_part_of_tag + \

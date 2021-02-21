@@ -1,7 +1,8 @@
 import tempfile
 
 from ._vendor.brain_dump.graphviz import create_solarized_mindmap_img
-from .util import get_notes, note_and_tag_tree, redirect_stderr_to_stdout
+from .anki_util import get_notes, note_and_tag_tree
+from .util import redirect_stderr_to_stdout
 
 GV_ENGINE = 'twopi'
 
