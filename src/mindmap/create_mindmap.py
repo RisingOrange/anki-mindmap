@@ -20,9 +20,8 @@ def tree_to_md(tree, level=0):
     ])
 
 
-def main(deck_name, output_file_path):
-    notes = get_notes(f'"deck:{deck_name}"', mw.col)
-    tag_prefix = deck_name.split('::')[-1]
+def create_mindmap(tag_prefix, output_file_path):
+    notes = get_notes(f'"tag:{tag_prefix}*"', mw.col)
     tree = note_and_tag_tree(notes, tag_prefix=tag_prefix,
                              only_tags=ONLY_TAGS, text_length_limit=NOTE_TEXT_LENGTH_LIMIT)
     tree_md = tree_to_md(tree)

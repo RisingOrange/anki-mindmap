@@ -3,6 +3,8 @@ from collections import defaultdict
 from html.parser import HTMLParser
 from io import StringIO
 
+TAG_SEPERATOR = '::'
+
 
 class MLStripper(HTMLParser):
     def __init__(self):
@@ -28,7 +30,7 @@ def strip_html_tags(html):
 def note_and_tag_tree(notes, tag_prefix=None, only_tags=False, root_name=None, text_length_limit=80):
     def tree(): return defaultdict(tree)
 
-    my_tree = tree()
+    result = tree()
 
     for note in notes:
         text = note_text(note, text_length_limit)
@@ -38,8 +40,11 @@ def note_and_tag_tree(notes, tag_prefix=None, only_tags=False, root_name=None, t
         for tag in note.tags:
             if not tag.startswith(tag_prefix):
                 continue
-            tag_parts = tag.split('::')
-            cur = my_tree
+            
+            tag_parts = tag.split(TAG_SEPERATOR)
+            prefix_tag_depth = len(tag_prefix.split(TAG_SEPERATOR))
+            tag_parts = tag_parts[prefix_tag_depth-1:]
+            cur = result
             for p in tag_parts:
                 cur = cur[p]
             if not only_tags:
@@ -48,10 +53,10 @@ def note_and_tag_tree(notes, tag_prefix=None, only_tags=False, root_name=None, t
     # add root node
     if root_name is not None:
         root = tree()
-        root[root_name] = my_tree
-        my_tree = root
+        root[root_name] = result
+        result = root
 
-    return my_tree
+    return result
 
 
 def note_text(note, length_limit=80):
