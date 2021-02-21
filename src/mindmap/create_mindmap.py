@@ -1,7 +1,7 @@
 import tempfile
 
 from ._vendor.brain_dump.graphviz import create_solarized_mindmap_img
-from .util import get_notes, note_and_tag_tree
+from .util import get_notes, note_and_tag_tree, redirect_stderr_to_stdout
 
 GV_ENGINE = 'twopi'
 
@@ -27,6 +27,8 @@ def create_mindmap(tag_prefix, output_file_path, only_tags=True):
     with open(tmp_md_file.name, 'w') as f:
         f.write(tree_md)
 
-    create_solarized_mindmap_img(
-        tmp_md_file.name, output_file_path, layout=GV_ENGINE)
+    with redirect_stderr_to_stdout():
+        create_solarized_mindmap_img(
+            tmp_md_file.name, output_file_path, layout=GV_ENGINE)
+
     tmp_md_file.close()

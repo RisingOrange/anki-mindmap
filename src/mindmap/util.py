@@ -1,5 +1,7 @@
 import re
+import sys
 from collections import defaultdict
+from contextlib import contextmanager
 from html.parser import HTMLParser
 from io import StringIO
 
@@ -35,21 +37,20 @@ def note_and_tag_tree(notes, tag_prefix=None, only_tags=False, root_name=None, t
     result = tree()
 
     for note in notes:
-        text = note_text(note, text_length_limit)
-        if text is None:
-            continue
-
         for tag in note.tags:
             if not tag.startswith(tag_prefix):
                 continue
 
-            tag_parts = tag.split(TAG_SEPERATOR)
             prefix_tag_depth = len(tag_prefix.split(TAG_SEPERATOR))
-            tag_parts = tag_parts[prefix_tag_depth-1:]
+            tag_parts = tag.split(TAG_SEPERATOR)[prefix_tag_depth-1:]
             cur = result
             for p in tag_parts:
                 cur = cur[p]
+
             if not only_tags:
+                text = note_text(note, text_length_limit)
+                if text is None:
+                    continue
                 cur[text] = tree()
 
     # add root node
@@ -97,3 +98,18 @@ def tag_prefixes():
         for i in range(1, len(tag.split(TAG_SEPERATOR)))
     ))
     return tag_prefixes
+
+
+class DevNull:
+    def write(self, msg):
+        pass
+
+
+@contextmanager
+def redirect_stderr_to_stdout():
+    stderr = sys.stderr
+    sys.stderr = sys.stdout
+    try:
+        yield None
+    finally:
+        sys.stderr = stderr
