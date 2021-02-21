@@ -25,13 +25,13 @@ from ..pydot import pydot
 from .parsers.indented_text_graph import parse as parse_text_graph
 
 
-def create_solarized_mindmap_img(input_filepath, output_file_path, layout='twopi', font='arial', hide_branches_from_id=None, gen_dot_file=False, root_label=None):
+def create_solarized_mindmap_img(input_filepath, output_file_path, layout='twopi', font='arial', hide_branches_from_id=None, root_label=None):
     assert locale.getdefaultlocale()[1] == 'UTF-8' # needed to print 'Duplicate content' warning without error and to bypass pydot Dot.write default raw formatting on line 1769
     with open(input_filepath) as txt_file:
         text = txt_file.read()
     theme = DarkSolarizedTheme(layout=layout, font=font)
     graph = parse_text_graph(text, root_label=root_label)
-    create_mindmap(graph, output_file_path, theme=theme, hide_branches_from_id=hide_branches_from_id, gen_dot_file=gen_dot_file)
+    create_mindmap(graph, output_file_path, theme=theme, hide_branches_from_id=hide_branches_from_id)
 
 def create_mindmap(graph, output_svg_path, theme, hide_branches_from_id=None):
     graph_height = graph.height
