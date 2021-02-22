@@ -69,8 +69,12 @@ class Theme:
     def bright(cls):
         return cls('white', 'black', cls.BRIGHT_EDGE_COLORS)
 
+THEMES = {
+    'darksolarized' : Theme.darksolarized(),
+    'bright' : Theme.bright()
+}
 
-def create_mindmap_img(input_filepath, output_file_path, theme=Theme.bright(), root_label=None):
+def create_mindmap_img(input_filepath, output_file_path, theme, root_label=None):
     with open(input_filepath) as txt_file:
         text = txt_file.read()
     graph = parse_text_graph(text, root_label=root_label)

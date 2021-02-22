@@ -6,9 +6,10 @@ from PyQt5.QtCore import *
 from PyQt5.QtGui import *
 from PyQt5.QtWidgets import *
 
-from .create_mindmap import create_mindmap
+from ._vendor.brain_dump.graphviz import THEMES
 from .anki_util import tag_prefixes
 from .config import cfg
+from .create_mindmap import create_mindmap
 
 
 class MindmapDialog(QDialog):
@@ -26,6 +27,10 @@ class MindmapDialog(QDialog):
 
         # add "tag prefix lineedit"
         self.tag_prefix_lineedit = self._setup_tag_prefix_lineedit(layout)
+
+        self.theme_picker = QComboBox()
+        self.theme_picker.addItems(list(THEMES.keys()))
+        layout.addWidget(self.theme_picker)
 
         # add "include notes" checkbox
         self.with_notes_cb = QCheckBox('include notes')
@@ -58,6 +63,7 @@ class MindmapDialog(QDialog):
             create_mindmap(
                 self.tag_prefix_lineedit.text(),
                 file_name,
+                THEMES[self.theme_picker.currentText()],
                 only_tags=not self.with_notes_cb.isChecked()
             )
             showInfo(f'{file_name} is ready')
