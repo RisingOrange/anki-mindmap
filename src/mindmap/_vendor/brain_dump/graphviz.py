@@ -4,7 +4,8 @@ from ..pydot import pydot
 from .parsers.indented_text_graph import parse as parse_text_graph
 
 
-class DarkSolarizedTheme:
+
+class Theme:
     DARKGREYBLUE = '#012b37'
     # Palette from http://ethanschoonover.com/solarized
     YELLOW = '#b58900'
@@ -19,15 +20,16 @@ class DarkSolarizedTheme:
 
     EDGE_COLORS = [YELLOW, ORANGE, VIOLET, RED, BLUE, MAGENTA, CYAN, GREEN, GREY]
 
-    def __init__(self, layout, font):
+    def __init__(self, bg_color, label_color):
         self.graph_style = dict(
-            layout=layout,
+            layout='twopi',
             overlap='false',
             splines='curved',
-            fontname=font,
-            bgcolor=self.DARKGREYBLUE,
+            fontname='arial',
+            bgcolor=bg_color,
             outputorder="edgesfirst",
         )
+        self.label_color = label_color
 
     def edge_style(self, dest_node, graph_height):
         color = self.EDGE_COLORS[dest_node.branch_id % len(self.EDGE_COLORS)]
@@ -38,19 +40,26 @@ class DarkSolarizedTheme:
         )
 
     def node_style(self, node, graph_height):
-        color = 'white'
         label = node.content.strip() if node.content and node.content != node.ROOT_DEFAULT_NAME else ''
         return dict(
             group=node.branch_id,
             shape='plaintext',
             label=label,
-            fontcolor=color,
+            fontcolor=self.label_color ,
             fontsize=2 * (16 + graph_height - node.depth),
             fontname=self.graph_style['fontname'], # not inherited by default
         )
 
+    @classmethod
+    def darksolarized(cls):
+        return cls(cls.DARKGREYBLUE, 'white')
 
-def create_solarized_mindmap_img(input_filepath, output_file_path, theme=DarkSolarizedTheme('twopi', 'arial'), root_label=None):
+    @classmethod
+    def bright(cls):
+        return cls('white', 'black')
+
+
+def create_solarized_mindmap_img(input_filepath, output_file_path, theme=Theme.darksolarized(), root_label=None):
     assert locale.getdefaultlocale()[1] == 'UTF-8' # needed to print 'Duplicate content' warning without error and to bypass pydot Dot.write default raw formatting on line 1769
     with open(input_filepath) as txt_file:
         text = txt_file.read()
