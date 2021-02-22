@@ -1,13 +1,11 @@
-import locale
 from ..pydot import pydot
-
 from .parsers.indented_text_graph import parse as parse_text_graph
 
 
 class Theme:
     SOLARIZED_BG_COLOR = '#012b37'
 
-    BRIGHT_EDGE_COLORS = [ # Pallette from https://flatuicolors.com/palette/defo
+    BRIGHT_EDGE_COLORS = [  # Pallette from https://flatuicolors.com/palette/defo
         '#f1c40f',
         '#e67e22',
         '#8e44ad',
@@ -72,26 +70,19 @@ class Theme:
         return cls('white', 'black', cls.BRIGHT_EDGE_COLORS)
 
 
-def create_solarized_mindmap_img(input_filepath, output_file_path, theme=Theme.bright(), root_label=None):
-    # needed to print 'Duplicate content' warning without error and to bypass pydot Dot.write default raw formatting on line 1769
-    assert locale.getdefaultlocale()[1] == 'UTF-8'
+def create_mindmap_img(input_filepath, output_file_path, theme=Theme.bright(), root_label=None):
     with open(input_filepath) as txt_file:
         text = txt_file.read()
     graph = parse_text_graph(text, root_label=root_label)
-    create_mindmap(graph, output_file_path, theme=theme)
-
-
-def create_mindmap(graph, output_svg_path, theme):
-    graph_height = graph.height
     pygraph = pydot.Dot(root=graph.content, **theme.graph_style)
     for node in graph:
         # avoid erroneous pydot 'port' detection + workaround this: https://github.com/erocarrera/pydot/issues/187
         content = pydot.quote_if_necessary(node.content)
         pygraph.add_node(pydot.Node(
-            content, **theme.node_style(node, graph_height)))
+            content, **theme.node_style(node, graph.height)))
         if node.parent:
             parent_content = node.parent.content if ':' not in node.parent.content else '"{}"'.format(
                 node.parent.content)
             pygraph.add_edge(pydot.Edge(parent_content, content,
-                                        **theme.edge_style(node, graph_height)))
-    pygraph.write_svg(output_svg_path, prog='twopi')
+                                        **theme.edge_style(node, graph.height)))
+    pygraph.write_svg(output_file_path)

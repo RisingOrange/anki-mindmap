@@ -1,6 +1,6 @@
 import tempfile
 
-from ._vendor.brain_dump.graphviz import create_solarized_mindmap_img
+from ._vendor.brain_dump.graphviz import create_mindmap_img
 from .anki_util import get_notes, note_and_tag_tree
 from .util import redirect_stderr_to_stdout
 
@@ -28,7 +28,7 @@ def create_mindmap(tag_prefix, output_file_path, only_tags=True):
         f.write(tree_md)
 
     with redirect_stderr_to_stdout():
-        create_solarized_mindmap_img(
+        create_mindmap_img(
             tmp_md_file.name, output_file_path)
 
     tmp_md_file.close()
