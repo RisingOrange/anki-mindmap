@@ -6,6 +6,10 @@ Anki-Mindmap is an addon for the spaced repetition flashcard app [Anki](https://
 ![](images/ADM_with_notes.svg)
 ![](images/lineare_algebra_with_notes.svg)
 
+
+### Screenshot
+![](images/mindmap_creator_dialog.png)
+
 ### Installation
 #### Dependencies
 This addon needs [graphviz](https://graphviz.org/download/) to be installed and to be on the PATH.
