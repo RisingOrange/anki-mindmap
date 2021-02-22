@@ -33,7 +33,7 @@ class MindmapDialog(QDialog):
         layout.addWidget(self.theme_picker)
 
         # add "include notes" checkbox
-        self.with_notes_cb = QCheckBox('include notes')
+        self.with_notes_cb = QCheckBox('include notes (experimental)')
         self.with_notes_cb.move(10, 0)
         self.with_notes_cb.adjustSize()
         layout.addWidget(self.with_notes_cb)
