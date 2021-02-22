@@ -4,7 +4,6 @@ from ._vendor.brain_dump.graphviz import create_solarized_mindmap_img
 from .anki_util import get_notes, note_and_tag_tree
 from .util import redirect_stderr_to_stdout
 
-GV_ENGINE = 'twopi'
 
 NOTE_TEXT_LENGTH_LIMIT = 80
 
@@ -30,6 +29,6 @@ def create_mindmap(tag_prefix, output_file_path, only_tags=True):
 
     with redirect_stderr_to_stdout():
         create_solarized_mindmap_img(
-            tmp_md_file.name, output_file_path, layout=GV_ENGINE)
+            tmp_md_file.name, output_file_path)
 
     tmp_md_file.close()
