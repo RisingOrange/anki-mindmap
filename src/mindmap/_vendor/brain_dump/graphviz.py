@@ -19,7 +19,6 @@
 # POTENTIAL EXTRA FEATURES: support for basic bold/italic Markdown markup: http://stackoverflow.com/a/30200953/636849
 
 import locale
-import sys
 from ..pydot import pydot
 
 from .parsers.indented_text_graph import parse as parse_text_graph
