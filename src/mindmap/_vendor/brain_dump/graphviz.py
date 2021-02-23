@@ -70,7 +70,7 @@ class Theme:
         return cls('white', 'black', cls.BRIGHT_EDGE_COLORS)
 
 THEMES = {
-    'darksolarized' : Theme.darksolarized(),
+    'dark solarized' : Theme.darksolarized(),
     'bright' : Theme.bright()
 }
 
