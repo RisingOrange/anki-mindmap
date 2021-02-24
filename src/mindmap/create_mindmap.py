@@ -4,7 +4,6 @@ from ._vendor.brain_dump.graphviz import create_mindmap_img
 from .anki_util import get_notes, note_and_tag_tree
 from .util import redirect_stderr_to_stdout
 
-
 NOTE_TEXT_LENGTH_LIMIT = 80
 
 
@@ -23,12 +22,5 @@ def create_mindmap(tag_prefix, output_file_path, theme, only_tags=True):
                              only_tags=only_tags, text_length_limit=NOTE_TEXT_LENGTH_LIMIT)
     tree_md = tree_to_md(tree)
 
-    tmp_md_file = tempfile.NamedTemporaryFile()
-    with open(tmp_md_file.name, 'w') as f:
-        f.write(tree_md)
-
     with redirect_stderr_to_stdout():
-        create_mindmap_img(
-            tmp_md_file.name, output_file_path, theme)
-
-    tmp_md_file.close()
+        create_mindmap_img(tree_md, output_file_path, theme)

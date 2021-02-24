@@ -74,10 +74,8 @@ THEMES = {
     'bright' : Theme.bright()
 }
 
-def create_mindmap_img(input_filepath, output_file_path, theme, root_label=None):
-    with open(input_filepath) as txt_file:
-        text = txt_file.read()
-    graph = parse_text_graph(text, root_label=root_label)
+def create_mindmap_img(graph_markdown, output_file_path, theme, root_label=None):
+    graph = parse_text_graph(graph_markdown, root_label=root_label)
     pygraph = pydot.Dot(root=graph.content, **theme.graph_style)
     for node in graph:
         # avoid erroneous pydot 'port' detection + workaround this: https://github.com/erocarrera/pydot/issues/187
