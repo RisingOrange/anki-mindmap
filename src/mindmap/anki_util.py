@@ -34,13 +34,23 @@ def get_notes(search_string):
     return result
 
 
-def tag_prefixes():
-    tags = [tag for tag in mw.col.tags.all(
-    ) if cfg('tag_seperator') in tag]
-    tag_prefixes = set((
-        cfg('tag_seperator').join(
-            tag.split(cfg('tag_seperator'))[:i])
-        for tag in tags
-        for i in range(1, len(tag.split(cfg('tag_seperator'))))
+def tags_that_have_subtags():
+    tags = _filter_out_leaves(mw.col.tags.all(), cfg('tag_seperator'))
+    return _prefixes(tags, cfg('tag_seperator'))
+
+
+def _filter_out_leaves(strings, seperator):
+    return [
+        string
+        for string in strings
+        if seperator in string
+    ]
+
+
+def _prefixes(strings, seperator):
+    return set((
+        seperator.join(
+            tag.split(seperator)[:i])
+        for tag in strings
+        for i in range(1, len(tag.split(seperator)))
     ))
-    return tag_prefixes
