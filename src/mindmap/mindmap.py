@@ -1,4 +1,4 @@
-from abc import ABC, abstractmethod
+from abc import ABC
 
 from aqt import mw
 
@@ -18,9 +18,12 @@ class Mindmap(ABC):
         with redirect_stderr_to_stdout():
             create_mindmap_img(tree_to_markdown(tree), output_file_path, theme)
 
-    @abstractmethod
     def _paths(self):
-        pass
+        return [
+            path
+            for path in self.all_paths
+            if self._has_matching_prefix(path)
+        ]
 
     def _create_tree(self):
         result = self._tree_from_paths()
@@ -31,8 +34,6 @@ class Mindmap(ABC):
         result = tree()
 
         for path in self._paths():
-            if not self._has_right_prefix(path):
-                continue
             self._traverse_tree(result, path)
 
         return result
@@ -48,7 +49,7 @@ class Mindmap(ABC):
                 self._traverse_tree(a_tree, path)[text] = tree()
         return a_tree
 
-    def _has_right_prefix(self, path):
+    def _has_matching_prefix(self, path):
         prefix_parts = self.prefix.split(self.seperator)
         path_parts = path.split(self.seperator)
         for a, b in zip(prefix_parts, path_parts):
@@ -76,30 +77,17 @@ class TagMindmap(Mindmap):
 
     def __init__(self, tag_prefix):
         self.prefix = tag_prefix
+        self.all_paths = mw.col.tags.all()
         self.query = 'tag'
         self.seperator = cfg('tag_seperator')
         self.tree = self._create_tree()
-
-    def _paths(self):
-        return [
-            tag
-            for note in get_notes(f'"tag:{self.prefix}*"')
-            for tag in note.tags
-            if self._has_right_prefix(tag)
-        ]
 
 
 class DeckMindmap(Mindmap):
 
     def __init__(self, deck_prefix):
         self.prefix = deck_prefix
+        self.all_paths = mw.col.decks.allNames()
         self.query = 'deck'
         self.seperator = '::'
         self.tree = self._create_tree()
-
-    def _paths(self):
-        return [
-            deck_name
-            for deck_name in mw.col.decks.allNames()
-            if self._has_right_prefix(deck_name)
-        ]
