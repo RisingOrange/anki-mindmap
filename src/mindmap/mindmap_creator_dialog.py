@@ -58,6 +58,10 @@ class MindmapDialog(QDialog):
         return lineedit
 
     def _on_button_click(self):
+        if self.tag_prefix_lineedit.text() not in tags_that_have_subtags():
+            showInfo('Please enter a valid tag')
+            return
+
         file_name = self.show_save_file_dialog()
         if file_name:
             mindmap = TagMindmap(self.tag_prefix_lineedit.text())
