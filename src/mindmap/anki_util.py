@@ -39,6 +39,12 @@ def tags_that_have_subtags():
     return _prefixes(tags, cfg('tag_seperator'))
 
 
+def decks_that_have_subdecks():
+    DECK_SEPERATOR = '::'
+    deck_names = _filter_out_leaves(mw.col.decks.allNames(), DECK_SEPERATOR)
+    return _prefixes(deck_names, DECK_SEPERATOR)
+
+
 def _filter_out_leaves(strings, seperator):
     return [
         string
