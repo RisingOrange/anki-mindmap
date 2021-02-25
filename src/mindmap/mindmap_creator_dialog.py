@@ -9,7 +9,7 @@ from PyQt5.QtWidgets import *
 from ._vendor.brain_dump.graphviz import THEMES
 from .anki_util import tag_prefixes
 from .config import cfg
-from .create_mindmap import create_mindmap
+from .mindmap import TagMindmap
 
 
 class MindmapDialog(QDialog):
@@ -60,10 +60,10 @@ class MindmapDialog(QDialog):
     def _on_button_click(self):
         file_name = self.show_save_file_dialog()
         if file_name:
-            create_mindmap(
-                self.tag_prefix_lineedit.text(),
-                file_name,
-                THEMES[self.theme_picker.currentText()],
+            mindmap = TagMindmap(self.tag_prefix_lineedit.text())
+            mindmap.save_as_img(
+                file_name, 
+                THEMES[self.theme_picker.currentText()], 
                 include_notes=self.with_notes_cb.isChecked()
             )
             showInfo(f'{file_name} is ready')

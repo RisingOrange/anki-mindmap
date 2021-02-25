@@ -1,43 +1,9 @@
 import re
-from collections import defaultdict
 
 from aqt import mw
 
 from .config import cfg
 from .util import strip_html_tags
-
-
-def note_and_tag_tree(notes, tag_prefix=None, include_notes=False, root_name=None, text_length_limit=80):
-    def tree(): return defaultdict(tree)
-
-    result = tree()
-
-    for note in notes:
-        for tag in note.tags:
-            if not tag.startswith(tag_prefix):
-                continue
-
-            prefix_tag_depth = len(tag_prefix.split(
-                cfg('tag_seperator')))
-            tag_parts = tag.split(cfg('tag_seperator'))[
-                prefix_tag_depth-1:]
-            cur = result
-            for p in tag_parts:
-                cur = cur[p]
-
-            if include_notes:
-                text = note_text(note, text_length_limit)
-                if text is None:
-                    continue
-                cur[text] = tree()
-
-    # add root node
-    if root_name is not None:
-        root = tree()
-        root[root_name] = result
-        result = root
-
-    return result
 
 
 def note_text(note, length_limit=80):
