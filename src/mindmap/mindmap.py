@@ -26,6 +26,7 @@ class Mindmap(ABC):
         ]
 
     def _create_tree(self):
+        # this is not needed, as adding the notes also creates the tree
         result = self._tree_from_paths()
         result = self._add_note_texts_to_tree(result)
         return result
@@ -40,7 +41,8 @@ class Mindmap(ABC):
 
     def _add_note_texts_to_tree(self, a_tree):
         for path in self._paths():
-            for note in get_notes(f'"{self.query}:{path}*"'):
+            # XXX this is probably slow
+            for note in get_notes(f'"{self.query}:{path}"'):
                 text = note_text(note, NOTE_TEXT_LENGTH_LIMIT)
 
                 if text is None:
