@@ -31,7 +31,7 @@ class Mindmap(ABC):
         result = tree()
 
         for path in self._paths():
-            if not path.startswith(self.prefix):
+            if not self._has_right_prefix(path):
                 continue
             self._traverse_tree(result, path)
 
@@ -47,6 +47,14 @@ class Mindmap(ABC):
 
                 self._traverse_tree(a_tree, path)[text] = tree()
         return a_tree
+
+    def _has_right_prefix(self, path):
+        prefix_parts = self.prefix.split(self.seperator)
+        path_parts = path.split(self.seperator)
+        for a, b in zip(prefix_parts, path_parts):
+            if a != b:
+                return False
+        return True
 
     def _traverse(self, path):
         return self._traverse_tree(self, path)
@@ -77,7 +85,7 @@ class TagMindmap(Mindmap):
             tag
             for note in get_notes(f'"tag:{self.prefix}*"')
             for tag in note.tags
-            if tag.startswith(self.prefix)
+            if self._has_right_prefix(tag)
         ]
 
 
@@ -93,5 +101,5 @@ class DeckMindmap(Mindmap):
         return [
             deck_name
             for deck_name in mw.col.decks.allNames()
-            if deck_name.startswith(self.prefix)
+            if self._has_right_prefix(deck_name)
         ]
