@@ -64,7 +64,7 @@ class MindmapDialog(QDialog):
                 self.tag_prefix_lineedit.text(),
                 file_name,
                 THEMES[self.theme_picker.currentText()],
-                only_tags=not self.with_notes_cb.isChecked()
+                include_notes=self.with_notes_cb.isChecked()
             )
             showInfo(f'{file_name} is ready')
 

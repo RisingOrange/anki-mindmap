@@ -7,7 +7,7 @@ from .config import cfg
 from .util import strip_html_tags
 
 
-def note_and_tag_tree(notes, tag_prefix=None, only_tags=False, root_name=None, text_length_limit=80):
+def note_and_tag_tree(notes, tag_prefix=None, include_notes=False, root_name=None, text_length_limit=80):
     def tree(): return defaultdict(tree)
 
     result = tree()
@@ -25,7 +25,7 @@ def note_and_tag_tree(notes, tag_prefix=None, only_tags=False, root_name=None, t
             for p in tag_parts:
                 cur = cur[p]
 
-            if not only_tags:
+            if include_notes:
                 text = note_text(note, text_length_limit)
                 if text is None:
                     continue

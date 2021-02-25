@@ -14,10 +14,10 @@ def tree_to_md(tree, level=0):
     ])
 
 
-def create_mindmap(tag_prefix, output_file_path, theme, only_tags=True):
+def create_mindmap(tag_prefix, output_file_path, theme, include_notes=False):
     notes = get_notes(f'"tag:{tag_prefix}*"')
     tree = note_and_tag_tree(notes, tag_prefix=tag_prefix,
-                             only_tags=only_tags, text_length_limit=NOTE_TEXT_LENGTH_LIMIT)
+                             include_notes=include_notes, text_length_limit=NOTE_TEXT_LENGTH_LIMIT)
 
     with redirect_stderr_to_stdout():
         create_mindmap_img(tree_to_md(tree), output_file_path, theme)
