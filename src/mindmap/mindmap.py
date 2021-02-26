@@ -72,13 +72,3 @@ class TagMindmap(Mindmap):
         self.seperator = cfg('tag_seperator')
         self.query_term = 'tag'
         self.tree = self._create_tree()
-
-
-class DeckMindmap(Mindmap):
-
-    def __init__(self, deck_prefix):
-        self.root_path = deck_prefix
-        self.all_paths = mw.col.decks.allNames()
-        self.seperator = '::'
-        self.query_term = 'deck'
-        self.tree = self._create_tree()
