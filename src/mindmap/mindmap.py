@@ -5,7 +5,7 @@ from aqt import mw
 from ._vendor.brain_dump.graphviz import create_mindmap_img
 from .anki_util import get_notes, note_text
 from .config import cfg
-from .tree import tree, tree_to_markdown, without_leaves
+from .tree import tree, tree_to_markdown
 from .util import redirect_stderr_to_stdout
 
 NOTE_TEXT_LENGTH_LIMIT = 80
@@ -14,8 +14,7 @@ NOTE_TEXT_LENGTH_LIMIT = 80
 class Mindmap(ABC):
 
     def save_as_img(self, output_file_path, theme, include_notes):
-        # XXX without_leaves also removes nodes that have no displayable notes
-        tree = self.tree if include_notes else without_leaves(self.tree)
+        tree = self._add_notes_to_tree(self.tree) if include_notes else self.tree
         with redirect_stderr_to_stdout():
             create_mindmap_img(tree_to_markdown(tree), output_file_path, theme)
 
@@ -29,8 +28,14 @@ class Mindmap(ABC):
     def _create_tree(self):
         result = tree()
         for path in self._paths():
+            self._traverse_tree(result, path)
+
+        return result
+
+    def _add_notes_to_tree(self, a_tree):
+        for path in self._paths():
             # traversing the tree adds nodes along the way
-            subtree = self._traverse_tree(result, path)
+            subtree = self._traverse_tree(a_tree, path)
 
             for note in get_notes(f'"{self.query_term}:{path}"'):
                 text = note_text(note, NOTE_TEXT_LENGTH_LIMIT)
@@ -38,7 +43,7 @@ class Mindmap(ABC):
                 if text is not None:
                     subtree[text] = tree()
 
-        return result
+        return a_tree
 
     def _traverse(self, path):
         return self._traverse_tree(self, path)
