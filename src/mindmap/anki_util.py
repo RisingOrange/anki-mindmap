@@ -13,10 +13,13 @@ def note_text(note, length_limit=80):
         result = note['Text']
     else:
         return None
+
     result = result.replace('\n', ' ')
     result = result.replace('<div>', '<div> ')
     result = result.replace('</div>', '</div> ')
     result = result.replace('<br>', ' ')
+    result = result.replace('<br />', ' ')
+    result = result.replace('<br/>', ' ')
     result = strip_html_tags(result)
     result = re.sub('{{c\d+:.+?}}', '(...)', result)
     result = result.strip()
