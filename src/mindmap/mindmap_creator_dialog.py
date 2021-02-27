@@ -7,7 +7,7 @@ from PyQt5.QtGui import *
 from PyQt5.QtWidgets import *
 
 from ._vendor.brain_dump.graphviz import THEMES
-from .anki_util import tags_that_have_subtags
+from .anki_util import all_tags_that_have_subtags
 from .config import cfg
 from .mindmap import TagMindmap
 
@@ -49,8 +49,8 @@ class MindmapDialog(QDialog):
         groupbox.layout().addWidget(QLabel("Choose a tag to be in the middle of the mindmap:"))
 
         lineedit = QLineEdit()
-        lineedit.setValidator(OptionValidator(tags_that_have_subtags()))
-        lineedit.setCompleter(QCompleter(tags_that_have_subtags()))
+        lineedit.setValidator(OptionValidator(all_tags_that_have_subtags()))
+        lineedit.setCompleter(QCompleter(all_tags_that_have_subtags()))
         groupbox.layout().addWidget(lineedit)
 
         groupbox.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
@@ -58,7 +58,7 @@ class MindmapDialog(QDialog):
         return lineedit
 
     def _on_button_click(self):
-        if self.tag_prefix_lineedit.text() not in tags_that_have_subtags():
+        if self.tag_prefix_lineedit.text() not in all_tags_that_have_subtags():
             showInfo('Please enter a valid tag')
             return
 
