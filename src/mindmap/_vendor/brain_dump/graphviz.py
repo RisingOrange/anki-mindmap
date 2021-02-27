@@ -41,17 +41,21 @@ class Theme:
         self.label_color = label_color
         self.edge_colors = edge_colors
 
-    def edge_style(self, dest_node, graph_height):
+    def edge_style(self, dest_node, width_percentage):
         color = self.edge_colors[dest_node.branch_id % len(self.edge_colors)]
         return dict(
             color=color,
             dir='none',
-            penwidth=2 * (2 + graph_height - dest_node.depth),
+            penwidth=max(100 * width_percentage, 3)
         )
 
     def node_style(self, node, graph_height):
-        label = node.content.strip(
-        ) if node.content and node.content != node.ROOT_DEFAULT_NAME else ''
+        node_text = ' '.join(node.content.strip().split()[:-1])
+        label = (
+            node_text 
+            if node_text and node_text != node.ROOT_DEFAULT_NAME
+            else ''
+        )
         return dict(
             group=node.branch_id,
             shape='plaintext',
@@ -69,10 +73,12 @@ class Theme:
     def bright(cls):
         return cls('white', 'black', cls.BRIGHT_EDGE_COLORS)
 
+
 THEMES = {
-    'dark solarized' : Theme.darksolarized(),
-    'bright' : Theme.bright()
+    'dark solarized': Theme.darksolarized(),
+    'bright': Theme.bright()
 }
+
 
 def create_mindmap_img(graph_markdown, output_file_path, theme, root_label=None):
     graph = parse_text_graph(graph_markdown, root_label=root_label)
@@ -85,6 +91,8 @@ def create_mindmap_img(graph_markdown, output_file_path, theme, root_label=None)
         if node.parent:
             parent_content = node.parent.content if ':' not in node.parent.content else '"{}"'.format(
                 node.parent.content)
-            pygraph.add_edge(pydot.Edge(parent_content, content,
-                                        **theme.edge_style(node, graph.height)))
+
+            a_theme = theme.edge_style(node, float(node.content.split()[-1]))
+            pygraph.add_edge(pydot.Edge(parent_content, content, **a_theme))
+
     pygraph.write_svg(output_file_path)
