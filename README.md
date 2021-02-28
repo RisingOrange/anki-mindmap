@@ -16,6 +16,7 @@ The "include notes" option is experimental and only draws notes of a couple of t
 ### Installation
 #### Dependencies
 This addon needs [graphviz](https://graphviz.org/download/) to be installed and to be on the PATH.
+Make sure to check "Add to path for all users" during installation.
 
 #### AnkiWeb
 The easiest way to install Anki-Mindmap is through [AnkiWeb](https://ankiweb.net/shared/info/965278890).
