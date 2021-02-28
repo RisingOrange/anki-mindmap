@@ -1,4 +1,3 @@
-#!/usr/bin/python3
 
 import sys
 
@@ -18,14 +17,17 @@ def parse(text, root_label=None):
             raise ValueError('Line {} is empty'.format(i + 1))
         indent = len(line) - len(value)
         if indent % 4 != 0:
-            raise ValueError('Incorrect indentation on line {}: not a mutiple of 4 spaces'.format(i + 1))
+            raise ValueError(
+                'Incorrect indentation on line {}: not a mutiple of 4 spaces'.format(i + 1))
         depth = 1 + indent / 4
         if last_node:
             if last_node.depth + 1 < depth:
-                raise ValueError('Incorrect indentation on line {}: too much indent compared to previous line'.format(i + 1))
+                raise ValueError(
+                    'Incorrect indentation on line {}: too much indent compared to previous line'.format(i + 1))
         else:
             if depth != 1:
-                raise ValueError('Incorrect indentation on line {}: first line must not have any indent'.format(i + 1))
+                raise ValueError(
+                    'Incorrect indentation on line {}: first line must not have any indent'.format(i + 1))
         parent_node = last_nodes_per_depth[depth - 1]
         last_node = parent_node.add_child(value)
         last_nodes_per_depth[last_node.depth] = last_node
@@ -48,10 +50,12 @@ class GraphNode:
         self._known_contents = known_contents
 
     def add_child(self, content):
+
+        # without this graphviz would treat nodes with the same content as the same node
         while content and content in self.known_contents:
-            print('Duplicate content found: {}. Using workaround'.format(content), file=sys.stderr)
             content = content + ' '
         self.known_contents.add(content)
+
         branch_id = None if self.parent else self.incr_last_branch_id()
         child = self.__class__(content, parent=self, branch_id=branch_id)
         self.children.append(child)
@@ -124,7 +128,3 @@ class GraphNode:
         yield self
         for child in self.children:
             yield from child
-
-if __name__ == '__main__':
-    with open(sys.argv[1]) as txt_file:
-        print(parse(txt_file.read()))
