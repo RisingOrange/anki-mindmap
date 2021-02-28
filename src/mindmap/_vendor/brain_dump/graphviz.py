@@ -41,18 +41,18 @@ class Theme:
         self.label_color = label_color
         self.edge_colors = edge_colors
 
-    def edge_style(self, dest_node, width_percentage):
+    def edge_style(self, graph, dest_node, width_percentage):
         color = self.edge_colors[dest_node.branch_id % len(self.edge_colors)]
         return dict(
             color=color,
             dir='none',
-            penwidth=max(100 * width_percentage, 3)
+            penwidth=2 * (2 + graph.height - dest_node.depth)
         )
 
     def node_style(self, node, graph_height):
         node_text = ' '.join(node.content.strip().split()[:-1])
         label = (
-            node_text 
+            node_text
             if node_text and node_text != node.ROOT_DEFAULT_NAME
             else ''
         )
@@ -74,9 +74,22 @@ class Theme:
         return cls('white', 'black', cls.BRIGHT_EDGE_COLORS)
 
 
+class ShowNoteDistributionTheme(Theme):
+
+    def edge_style(self, graph, dest_node, width_percentage):
+        color = self.edge_colors[dest_node.branch_id % len(self.edge_colors)]
+        return dict(
+            color=color,
+            dir='none',
+            penwidth=max(100 * width_percentage, 3)
+        )
+
+
 THEMES = {
     'dark solarized': Theme.darksolarized(),
-    'bright': Theme.bright()
+    'dark solarized (more notes - bigger branch)': ShowNoteDistributionTheme.darksolarized(),
+    'bright': Theme.bright(),
+    'bright (more notes - bigger branch)': ShowNoteDistributionTheme.bright(),
 }
 
 
@@ -92,7 +105,8 @@ def create_mindmap_img(graph_markdown, output_file_path, theme, root_label=None)
             parent_content = node.parent.content if ':' not in node.parent.content else '"{}"'.format(
                 node.parent.content)
 
-            a_theme = theme.edge_style(node, float(node.content.split()[-1]))
+            a_theme = theme.edge_style(
+                graph, node, float(node.content.split()[-1]))
             pygraph.add_edge(pydot.Edge(parent_content, content, **a_theme))
 
     pygraph.write_svg(output_file_path)
