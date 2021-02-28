@@ -65,12 +65,20 @@ class MindmapDialog(QDialog):
         file_name = self.show_save_file_dialog()
         if file_name:
             mindmap = TagMindmap(self.tag_prefix_lineedit.text())
-            mindmap.save_as_img(
-                file_name, 
-                THEMES[self.theme_picker.currentText()], 
-                include_notes=self.with_notes_cb.isChecked()
-            )
-            showInfo(f'{file_name} is ready')
+            try:
+                mindmap.save_as_img(
+                    file_name,
+                    THEMES[self.theme_picker.currentText()],
+                    include_notes=self.with_notes_cb.isChecked()
+                )
+            except OSError as e:
+                if e.args[1] == '"dot" not found in path.':
+                    showInfo(
+                    'It seems like you do not have Graphviz installed.\n' +
+                    'You can get it from https://graphviz.org/download/.'
+                )
+            else:
+                showInfo(f'{file_name} is ready')
 
     def show_save_file_dialog(self):
         last_part_of_tag = self.tag_prefix_lineedit.text().split(
