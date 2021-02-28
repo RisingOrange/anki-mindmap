@@ -1,12 +1,9 @@
 
-import sys
-
-
 def parse(text, root_label=None):
     if not text:
         raise ValueError('Empty graph')
-    if text[-1] == '\n':
-        text = text[:-1]
+    text = text.strip('\n')
+
     root = GraphNode.create_root(root_label)
     last_nodes_per_depth = {0: root}
     last_node = None
@@ -14,20 +11,20 @@ def parse(text, root_label=None):
         line = line.rstrip()
         value = line.lstrip()
         if not value:
-            raise ValueError('Line {} is empty'.format(i + 1))
+            raise ValueError(f'Line {i + 1} is empty')
         indent = len(line) - len(value)
         if indent % 4 != 0:
             raise ValueError(
-                'Incorrect indentation on line {}: not a mutiple of 4 spaces'.format(i + 1))
+                f'Incorrect indentation on line {i + 1}: not a mutiple of 4 spaces:\n{line}')
         depth = 1 + indent / 4
         if last_node:
             if last_node.depth + 1 < depth:
                 raise ValueError(
-                    'Incorrect indentation on line {}: too much indent compared to previous line'.format(i + 1))
+                    f'Incorrect indentation on line {i + 1}:: too much indent compared to previous line:\n{line}')
         else:
             if depth != 1:
                 raise ValueError(
-                    'Incorrect indentation on line {}: first line must not have any indent'.format(i + 1))
+                    f'Incorrect indentation on line {i + 1}:: first line must not have any indent:\n{line}')
         parent_node = last_nodes_per_depth[depth - 1]
         last_node = parent_node.add_child(value)
         last_nodes_per_depth[last_node.depth] = last_node

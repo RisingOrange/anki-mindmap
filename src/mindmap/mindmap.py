@@ -50,9 +50,9 @@ class Mindmap(ABC):
 
         if include_notes and len(tree) == 0:
             return '\n'.join([
-                f'{indent}{note_text(note)} 0'
+                f'{indent}{note_text(note).strip()} 0'
                 for note in self.notes_by_path[self._with_root_path(path)]
-                if note_text(note)
+                if note_text(note).strip()
             ])
         else:
             return '\n'.join([
@@ -61,6 +61,7 @@ class Mindmap(ABC):
                     subtree, include_notes, level+1, new_path(key))
                 ).strip('\n')
                 for key, subtree in tree.items()
+                if key.strip()
             ])
 
     def _paths(self):
