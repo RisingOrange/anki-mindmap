@@ -9,7 +9,6 @@ import re
 import subprocess
 import sys
 import tempfile
-import warnings
 
 
 __author__ = 'Ero Carrera'
