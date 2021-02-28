@@ -49,7 +49,7 @@ class Theme:
             penwidth=2 * (2 + graph.height - dest_node.depth)
         )
 
-    def node_style(self, node, graph_height):
+    def node_style(self, node, graph):
         node_text = ' '.join(node.content.strip().split()[:-1])
         label = (
             node_text
@@ -61,7 +61,7 @@ class Theme:
             shape='plaintext',
             label=label,
             fontcolor=self.label_color,
-            fontsize=2 * (16 + graph_height - node.depth),
+            fontsize= 2 * (16 + graph.height - node.depth),
             fontname=self.graph_style['fontname'],  # not inherited by default
         )
 
@@ -81,7 +81,7 @@ class ShowNoteDistributionTheme(Theme):
         return dict(
             color=color,
             dir='none',
-            penwidth=max(100 * width_percentage, 3)
+            penwidth=max(130 * width_percentage, 7)
         )
 
 
@@ -100,7 +100,7 @@ def create_mindmap_img(graph_markdown, output_file_path, theme, root_label=None)
         # avoid erroneous pydot 'port' detection + workaround this: https://github.com/erocarrera/pydot/issues/187
         content = pydot.quote_if_necessary(node.content)
         pygraph.add_node(pydot.Node(
-            content, **theme.node_style(node, graph.height)))
+            content, **theme.node_style(node, graph)))
         if node.parent:
             parent_content = node.parent.content if ':' not in node.parent.content else '"{}"'.format(
                 node.parent.content)
