@@ -49,17 +49,17 @@ class Mindmap(ABC):
             return path + self.seperator + key if path else key
 
         if include_notes and len(tree) == 0:
-            result = '\n'.join([
+            return '\n'.join([
                 f'{indent}{note_text(note)} 0'
                 for note in self.notes_by_path[self._with_root_path(path)]
                 if note_text(note)
-            ]) + '\n'
-            return result if result.strip() else ''
+            ])
         else:
-            return ''.join([
-                f'{indent}{key.strip()} {self._percentage_of_notes_by_path(new_path(key))}\n' +
+            return '\n'.join([
+                (f'{indent}{key.strip()} {self._percentage_of_notes_by_path(new_path(key))}\n' +
                 self._tree_to_markdown(
                     subtree, include_notes, level+1, new_path(key))
+                ).strip('\n')
                 for key, subtree in tree.items()
             ])
 
