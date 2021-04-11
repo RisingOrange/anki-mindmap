@@ -1,12 +1,15 @@
+import tempfile
 
 from anki.lang import _
 from aqt import mw
 from aqt.utils import showInfo
 from PyQt5.QtCore import *
 from PyQt5.QtGui import *
+from PyQt5.QtGui import QImage
 from PyQt5.QtWidgets import *
 
 from ._vendor.brain_dump.graphviz import THEMES
+from ._vendor.pyqt_image_viewer.QtImageViewer import QtImageViewer
 from .anki_util import all_tags_that_have_subtags
 from .config import cfg
 from .mindmap import TagMindmap
@@ -39,7 +42,10 @@ class MindmapDialog(QDialog):
         layout.addWidget(self.with_notes_cb)
 
         # add "Draw" button
-        layout.add = make_button("Draw", self._on_button_click, layout)
+        layout.add = make_button("Show", self._on_show_button_click, layout)
+        layout.save = make_button("Save", self._on_save_button_click, layout)
+
+        self._setup_viewer()
 
     def _setup_tag_prefix_lineedit(self, parent):
         groupbox = QGroupBox()
@@ -57,30 +63,48 @@ class MindmapDialog(QDialog):
 
         return lineedit
 
-    def _on_button_click(self):
-        if self.tag_prefix_lineedit.text() not in all_tags_that_have_subtags():
-            showInfo('Please enter a valid tag')
+    def _setup_viewer(self):
+        self.viewer = QtImageViewer()
+        viewer = self.viewer
+
+        viewer.aspectRatioMode = Qt.KeepAspectRatio
+        viewer.setHorizontalScrollBarPolicy(Qt.ScrollBarAsNeeded)
+        viewer.setVerticalScrollBarPolicy(Qt.ScrollBarAsNeeded)
+
+        # Allow zooming with right mouse button.
+        # Drag for zoom box, doubleclick to view full image.
+        viewer.canZoom = True
+
+        # Allow panning with left mouse button.
+        viewer.canPan = True
+
+    # button actions
+    def _on_show_button_click(self):
+        if self._warn_if_invalid_tag():
             return
 
-        file_name = self.show_save_file_dialog()
-        if file_name:
-            mindmap = TagMindmap(self.tag_prefix_lineedit.text())
-            try:
-                mindmap.save_as_img(
-                    file_name,
-                    THEMES[self.theme_picker.currentText()],
-                    include_notes=self.with_notes_cb.isChecked()
-                )
-            except OSError as e:
-                if e.args[1] == '"dot" not found in path.':
-                    showInfo(
-                    'It seems like you do not have Graphviz installed.\n' +
-                    'You can get it from https://graphviz.org/download/.'
-                )
-            else:
-                showInfo(f'{file_name} is ready')
+        with tempfile.NamedTemporaryFile() as f:
+            self._save_mindmap_to_file(f.name)
+            image = QImage(f.name)
 
-    def show_save_file_dialog(self):
+        self.viewer.setImage(image)
+        self.viewer.showMaximized()
+
+    def _on_save_button_click(self):
+        if self._warn_if_invalid_tag():
+            return
+
+        file_name = self._show_save_file_dialog()
+        self._save_mindmap_to_file(file_name)
+
+    # helper functions
+    def _warn_if_invalid_tag(self):
+        if self.tag_prefix_lineedit.text() not in all_tags_that_have_subtags():
+            showInfo('Please enter a valid tag')
+            return True
+        return False
+
+    def _show_save_file_dialog(self):
         last_part_of_tag = self.tag_prefix_lineedit.text().split(
             cfg('tag_seperator'))[-1]
         suggested_filename = last_part_of_tag + \
@@ -88,6 +112,21 @@ class MindmapDialog(QDialog):
         result, _ = QFileDialog.getSaveFileName(
             self, "", suggested_filename, "*.svg")
         return result
+
+    def _save_mindmap_to_file(self, file_name):
+        mindmap = TagMindmap(self.tag_prefix_lineedit.text())
+        try:
+            mindmap.save_as_img(
+                file_name,
+                THEMES[self.theme_picker.currentText()],
+                include_notes=self.with_notes_cb.isChecked()
+            )
+        except OSError as e:
+            if e.args[1] == '"dot" not found in path.':
+                showInfo(
+                    'It seems like you do not have Graphviz installed.\n' +
+                    'You can get it from https://graphviz.org/download/.'
+                )
 
 
 class OptionValidator(QValidator):
