@@ -8,7 +8,7 @@ from PyQt5.QtGui import *
 from PyQt5.QtGui import QImage
 from PyQt5.QtWidgets import *
 
-from ._vendor.brain_dump.graphviz import THEMES
+from ._vendor.brain_dump.graphviz import THEMES, theme
 from ._vendor.pyqt_image_viewer.QtImageViewer import QtImageViewer
 from .anki_util import all_tags_that_have_subtags
 from .config import cfg
@@ -32,8 +32,14 @@ class MindmapDialog(QDialog):
         self.tag_prefix_lineedit = self._setup_tag_prefix_lineedit(layout)
 
         self.theme_picker = QComboBox()
-        self.theme_picker.addItems(list(THEMES.keys()))
+        self.theme_picker.addItems(THEMES)
         layout.addWidget(self.theme_picker)
+
+        # add "include notes" checkbox
+        self.scale_branches_cb = QCheckBox('more notes - bigger branch')
+        self.scale_branches_cb.move(10, 0)
+        self.scale_branches_cb.adjustSize()
+        layout.addWidget(self.scale_branches_cb)
 
         # add "include notes" checkbox
         self.with_notes_cb = QCheckBox('include notes (experimental)')
@@ -41,7 +47,7 @@ class MindmapDialog(QDialog):
         self.with_notes_cb.adjustSize()
         layout.addWidget(self.with_notes_cb)
 
-        # add "Draw" button
+        # add buttons
         layout.add = make_button("Show", self._on_show_button_click, layout)
         layout.save = make_button("Save", self._on_save_button_click, layout)
 
@@ -118,7 +124,8 @@ class MindmapDialog(QDialog):
         try:
             mindmap.save_as_img(
                 file_name,
-                THEMES[self.theme_picker.currentText()],
+                theme(self.theme_picker.currentText(),
+                      self.scale_branches_cb.isChecked()),
                 include_notes=self.with_notes_cb.isChecked()
             )
         except OSError as e:

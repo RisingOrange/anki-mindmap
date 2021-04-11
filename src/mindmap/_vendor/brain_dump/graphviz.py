@@ -65,15 +65,6 @@ class Theme:
             fontname=self.graph_style['fontname'],  # not inherited by default
         )
 
-    @classmethod
-    def darksolarized(cls):
-        return cls(cls.SOLARIZED_BG_COLOR, 'white', cls.SOLARIZED_EDGE_COLORS)
-
-    @classmethod
-    def bright(cls):
-        return cls('white', 'black', cls.BRIGHT_EDGE_COLORS)
-
-
 class ShowNoteDistributionTheme(Theme):
 
     def edge_style(self, graph, dest_node, width_percentage):
@@ -85,12 +76,26 @@ class ShowNoteDistributionTheme(Theme):
         )
 
 
-THEMES = {
-    'dark solarized': Theme.darksolarized(),
-    'dark solarized (more notes - bigger branch)': ShowNoteDistributionTheme.darksolarized(),
-    'bright': Theme.bright(),
-    'bright (more notes - bigger branch)': ShowNoteDistributionTheme.bright(),
-}
+THEMES = [
+    'dark solarized',
+    'bright'
+]
+
+def theme(name, scale_branches):
+    if scale_branches:
+        class_ = ShowNoteDistributionTheme
+    else:
+        class_ = Theme
+
+    if name == 'dark solarized':
+        return class_(Theme.SOLARIZED_BG_COLOR, 'white', Theme.SOLARIZED_EDGE_COLORS)
+    if name == 'bright':
+        return class_('white', 'black', Theme.BRIGHT_EDGE_COLORS)
+    
+    
+
+
+
 
 
 def create_mindmap_img(graph_markdown, output_file_path, theme, root_label=None):
