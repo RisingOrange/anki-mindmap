@@ -1,18 +1,23 @@
-# HACK for testing, because without running anki, importing aqt results in an error
-try:
-    from aqt import mw
-    from .mindmap_creator_dialog import show as show_dialog
-    from PyQt5.QtWidgets import *
+from anki.hooks import addHook
+from PyQt5.QtWidgets import *
 
-    def main():
-        setup_toolbar_button()
+from .mindmap_creator_dialog import show as show_dialog
 
-    def setup_toolbar_button():
-        a = QAction('Create mindmap', mw)
-        a.triggered.connect(show_dialog)
-        mw.form.menuTools.addAction(a)
 
-    main()
+def main():
+    addHook('browser.setupMenus', lambda self: setup_menu(self))
 
-except Exception as e:
-    print(e)
+
+def setup_menu(self):
+
+    # self is an aqt.browser.Browser instance
+    self.menuTags = QMenu("Mindmap")
+    self.menuBar().insertMenu(self.mw.form.menuTools.menuAction(), self.menuTags)
+
+    menu = self.menuTags
+
+    a = menu.addAction("Create a Mindmap")
+    a.triggered.connect(lambda _: show_dialog())
+
+
+main()
