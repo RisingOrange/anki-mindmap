@@ -1,5 +1,7 @@
 meta.json
-.vscode/*
+.vscode/
 *__pycache__*
 
-build/*
+build/
+ profile/
+tools/
