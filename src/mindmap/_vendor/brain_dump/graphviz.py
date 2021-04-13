@@ -61,9 +61,10 @@ class Theme:
             shape='plaintext',
             label=label,
             fontcolor=self.label_color,
-            fontsize= 2 * (16 + graph.height - node.depth),
+            fontsize=2 * (16 + graph.height - node.depth),
             fontname=self.graph_style['fontname'],  # not inherited by default
         )
+
 
 class ShowNoteDistributionTheme(Theme):
 
@@ -81,6 +82,7 @@ THEMES = [
     'bright'
 ]
 
+
 def theme(name, scale_branches):
     if scale_branches:
         class_ = ShowNoteDistributionTheme
@@ -91,11 +93,6 @@ def theme(name, scale_branches):
         return class_(Theme.SOLARIZED_BG_COLOR, 'white', Theme.SOLARIZED_EDGE_COLORS)
     if name == 'bright':
         return class_('white', 'black', Theme.BRIGHT_EDGE_COLORS)
-    
-    
-
-
-
 
 
 def create_mindmap_img(graph_markdown, output_file_path, theme, root_label=None):
@@ -114,4 +111,4 @@ def create_mindmap_img(graph_markdown, output_file_path, theme, root_label=None)
                 graph, node, float(node.content.split()[-1]))
             pygraph.add_edge(pydot.Edge(parent_content, content, **a_theme))
 
-    pygraph.write_svg(output_file_path)
+    pygraph.write_svg(output_file_path, encoding='utf-8')
