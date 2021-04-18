@@ -15,6 +15,7 @@ from .anki_util import all_tags_that_have_subtags
 from .config import cfg
 from .mindmap import TagMindmap
 
+
 class MindmapDialog(QDialog):
 
     window_title = 'Mindmap Creator'
@@ -62,7 +63,8 @@ class MindmapDialog(QDialog):
 
         lineedit = QLineEdit()
         lineedit.setValidator(OptionValidator(all_tags_that_have_subtags()))
-        lineedit.setCompleter(QCompleter(all_tags_that_have_subtags()))
+        completer = MyCompleter(all_tags_that_have_subtags())
+        lineedit.setCompleter(completer)
         groupbox.layout().addWidget(lineedit)
 
         groupbox.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
@@ -144,6 +146,18 @@ class MindmapDialog(QDialog):
                     'It seems like you do not have Graphviz installed.\n' +
                     'You can get it from https://graphviz.org/download/.'
                 )
+
+
+class MyCompleter(QCompleter):
+    def __init__(self, *args):
+        super().__init__(*args)
+
+    # show options when lineedit is clicked even if it is empty
+    def eventFilter(self, source, event):
+        if event.type() == QEvent.MouseButtonPress:
+            self.complete()
+
+        return super().eventFilter(source, event)
 
 
 class OptionValidator(QValidator):
