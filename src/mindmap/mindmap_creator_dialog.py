@@ -1,4 +1,5 @@
 import tempfile
+import textwrap
 
 from anki.lang import _
 from aqt import mw
@@ -13,7 +14,6 @@ from ._vendor.pyqt_image_viewer.QtImageViewer import QtImageViewer
 from .anki_util import all_tags_that_have_subtags
 from .config import cfg
 from .mindmap import TagMindmap
-
 
 class MindmapDialog(QDialog):
 
@@ -88,6 +88,8 @@ class MindmapDialog(QDialog):
     def _on_show_button_click(self):
         if self._warn_if_invalid_tag():
             return
+        if self.with_notes_cb.isChecked():
+            self._warn_if_include_notes_checked()
 
         with tempfile.NamedTemporaryFile() as f:
             self._save_mindmap_to_file(f.name)
@@ -99,6 +101,8 @@ class MindmapDialog(QDialog):
     def _on_save_button_click(self):
         if self._warn_if_invalid_tag():
             return
+        if self.with_notes_cb.isChecked():
+            self._warn_if_include_notes_checked()
 
         file_name = self._show_save_file_dialog()
         self._save_mindmap_to_file(file_name)
@@ -109,6 +113,12 @@ class MindmapDialog(QDialog):
             showInfo('Please enter a valid tag')
             return True
         return False
+
+    def _warn_if_include_notes_checked(self):
+        showInfo(textwrap.dedent('''\
+            The "include notes" option is not really supported yet, it just works with Basic and Cloze notes.
+            The text from the front of these notes is shown on the mindmap. The text of all other notes is not. 
+        '''))
 
     def _show_save_file_dialog(self):
         last_part_of_tag = self.tag_prefix_lineedit.text().split(
