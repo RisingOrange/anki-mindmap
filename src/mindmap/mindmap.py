@@ -52,7 +52,7 @@ class Mindmap(ABC):
             return '\n'.join([
                 f'{indent}{note_text(note).strip()} 0'
                 for note in self.notes_by_path[self._with_root_path(path)]
-                if note_text(note).strip()
+                if note_text(note)
             ])
         else:
             return '\n'.join([

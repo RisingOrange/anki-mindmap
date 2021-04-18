@@ -7,11 +7,14 @@ from .util import strip_html_tags
 
 
 def note_text(note, length_limit=80):
-    if note.model()['name'].startswith('Basic'):
-        result = note['Front']
-    elif note.model()['name'].startswith('Cloze'):
-        result = note['Text']
-    else:
+    try:
+        if note.model()['name'] == 'Basic':
+            result = note['Front']
+        elif note.model()['name'] == 'Cloze':
+            result = note['Text']
+        else:
+            return None
+    except KeyError:
         return None
 
     result = result.replace('\n', ' ')
