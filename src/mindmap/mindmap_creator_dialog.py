@@ -7,10 +7,10 @@ from aqt.utils import showInfo
 from PyQt5.QtCore import *
 from PyQt5.QtGui import *
 from PyQt5.QtGui import QImage
+from PyQt5.QtSvg import QGraphicsSvgItem
 from PyQt5.QtWidgets import *
 
 from ._vendor.brain_dump.graphviz import THEMES, theme
-from ._vendor.pyqt_image_viewer.QtImageViewer import QtImageViewer
 from .anki_util import all_tags_that_have_subtags
 from .config import cfg
 from .mindmap import TagMindmap
@@ -52,8 +52,6 @@ class MindmapDialog(QDialog):
         layout.add = make_button("Show", self._on_show_button_click, layout)
         layout.save = make_button("Save", self._on_save_button_click, layout)
 
-        self._setup_viewer()
-
     def _setup_tag_prefix_lineedit(self, parent):
         groupbox = QGroupBox()
         groupbox.setLayout(QVBoxLayout())
@@ -63,28 +61,13 @@ class MindmapDialog(QDialog):
 
         lineedit = QLineEdit()
         lineedit.setValidator(OptionValidator(all_tags_that_have_subtags()))
-        completer = MyCompleter(all_tags_that_have_subtags())
+        completer = Completer(all_tags_that_have_subtags())
         lineedit.setCompleter(completer)
         groupbox.layout().addWidget(lineedit)
 
         groupbox.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
 
         return lineedit
-
-    def _setup_viewer(self):
-        self.viewer = QtImageViewer()
-        viewer = self.viewer
-
-        viewer.aspectRatioMode = Qt.KeepAspectRatio
-        viewer.setHorizontalScrollBarPolicy(Qt.ScrollBarAsNeeded)
-        viewer.setVerticalScrollBarPolicy(Qt.ScrollBarAsNeeded)
-
-        # Allow zooming with right mouse button.
-        # Drag for zoom box, doubleclick to view full image.
-        viewer.canZoom = True
-
-        # Allow panning with left mouse button.
-        viewer.canPan = True
 
     # button actions
     def _on_show_button_click(self):
@@ -93,12 +76,13 @@ class MindmapDialog(QDialog):
         if self.with_notes_cb.isChecked():
             self._warn_if_include_notes_checked()
 
+
+        self.viewer = GraphicsView()
         with tempfile.NamedTemporaryFile() as f:
             self._save_mindmap_to_file(f.name)
-            image = QImage(f.name)
-            self.viewer.setImage(image)
+            self.viewer.setImg(f.name)
 
-        self.viewer.showMaximized()
+        self.viewer.show()
 
     def _on_save_button_click(self):
         if self._warn_if_invalid_tag():
@@ -148,7 +132,41 @@ class MindmapDialog(QDialog):
                 )
 
 
-class MyCompleter(QCompleter):
+class GraphicsView(QGraphicsView):
+
+    def __init__(self, *args):
+        super().__init__(*args)
+        self.setDragMode(QGraphicsView.ScrollHandDrag)
+
+    def setImg(self, svg_path):
+        self.scene = QGraphicsScene()
+        item = QGraphicsSvgItem(svg_path)
+        self.scene.addItem(item)
+        self.setScene(self.scene)
+        self.fitInView(self.scene.sceneRect(), Qt.KeepAspectRatio)
+
+    def resizeEvent(self, event):
+
+        # HACK window contents get fitted in view if the difference between
+        # the old and new size is sufficiently big
+        # this prevents fitInView being called when zooming using the scroll wheel
+        # because otherwise fitInView gets called and zooms out again when zooming in on the image
+        if(abs(event.size().width() - event.oldSize().width()) > 100):
+            self.fitInView(self.scene.sceneRect(), Qt.KeepAspectRatio)
+
+    def wheelEvent(self, event):
+        factor = 1.1
+        if event.angleDelta().y() < 0:
+            factor = 0.9
+        view_pos = event.pos()
+        scene_pos = self.mapToScene(view_pos)
+        self.centerOn(scene_pos)
+        self.scale(factor, factor)
+        delta = self.mapToScene(view_pos) - self.mapToScene(self.viewport().rect().center())
+        self.centerOn(scene_pos - delta)
+
+
+class Completer(QCompleter):
     def __init__(self, *args):
         super().__init__(*args)
 
