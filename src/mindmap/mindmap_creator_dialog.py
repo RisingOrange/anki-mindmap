@@ -96,8 +96,8 @@ class MindmapDialog(QDialog):
         with tempfile.NamedTemporaryFile() as f:
             self._save_mindmap_to_file(f.name)
             image = QImage(f.name)
+            self.viewer.setImage(image)
 
-        self.viewer.setImage(image)
         self.viewer.showMaximized()
 
     def _on_save_button_click(self):
