@@ -1,5 +1,10 @@
 from collections import defaultdict
 
+from anki.utils import isMac
+from aqt import mw
+from PyQt5.QtCore import Qt
+from PyQt5.QtWidgets import QLabel, QProgressBar, QWidget
+
 from ._vendor.brain_dump.graphviz import create_mindmap_img
 from .anki_util import all_tags, get_notes, note_text
 from .config import cfg
@@ -8,6 +13,20 @@ from .util import redirect_stderr_to_stdout
 
 NOTE_TEXT_LENGTH_LIMIT = 80
 
+def getProgressWidget():
+    progressWidget = QWidget()
+    progressWidget.setFixedSize(400, 70)
+    progressWidget.setWindowModality(Qt.ApplicationModal)
+    bar = QProgressBar(progressWidget)
+    if isMac:
+        bar.setFixedSize(380, 50)
+    else:
+        bar.setFixedSize(390, 50)
+    bar.move(10, 10)
+    per = QLabel(bar)
+    per.setAlignment(Qt.AlignCenter)
+    progressWidget.show()
+    return progressWidget, bar
 
 class TagMindmap:
 
@@ -18,16 +37,36 @@ class TagMindmap:
         self.query_term = 'tag'
         self.tree = self._initialize_tree()
         self.notes_by_path = self._initialize_notes_by_path()
-        pass
 
     def save_as_img(self, output_file_path, theme, include_notes):
-        with redirect_stderr_to_stdout():
-            create_mindmap_img(
-                self._to_markdown(include_notes),
-                output_file_path,
-                theme
-            )
+        markdown = self._to_markdown(include_notes)
 
+        widget, bar = getProgressWidget()
+        bar.setMinimum(0)
+        bar.setMaximum(len(markdown.split('\n')))
+        def callback():
+            bar.setValue(callback.i)
+            callback.i += 1
+            if not widget.isVisible():
+                raise Exception('user cancelled drawing')
+            mw.app.processEvents()
+        callback.i = 0
+
+        with redirect_stderr_to_stdout():
+            try:
+                create_mindmap_img(
+                    markdown,
+                    output_file_path,
+                    theme,
+                    callback
+                )
+            except Exception as e:
+                if e.args and e.args[0] == 'user cancelled drawing':
+                    print('user cancelled drawing')
+                    pass
+            finally:
+                widget.close()
+        
     def _initialize_tree(self):
         result = tree()
         for path in self._paths():
