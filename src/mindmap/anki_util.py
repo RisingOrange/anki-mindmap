@@ -35,9 +35,10 @@ def note_text(note, length_limit=80):
 
 
 def get_notes(search_string):
-    note_ids = mw.col.find_notes(search_string)
-    result = [mw.col.getNote(id_) for id_ in note_ids]
-    return result
+    return [ 
+        mw.col.getNote(id) 
+        for id in mw.col.find_notes(search_string)
+    ]
 
 
 def all_tags():
