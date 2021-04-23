@@ -98,6 +98,8 @@ def theme(name, scale_branches):
 def create_mindmap_img(graph_markdown, output_file_path, theme, root_label=None):
     graph = parse_text_graph(graph_markdown, root_label=root_label)
     pygraph = pydot.Dot(root=graph.content, **theme.graph_style)
+
+    cnt = 0
     for node in graph:
         # avoid erroneous pydot 'port' detection + workaround this: https://github.com/erocarrera/pydot/issues/187
         content = pydot.quote_if_necessary(node.content)
@@ -110,5 +112,9 @@ def create_mindmap_img(graph_markdown, output_file_path, theme, root_label=None)
             a_theme = theme.edge_style(
                 graph, node, float(node.content.split()[-1]))
             pygraph.add_edge(pydot.Edge(parent_content, content, **a_theme))
+        
+        if cnt == 250:
+            raise RuntimeError('too many nodes')
+        cnt += 1
 
     pygraph.write_svg(output_file_path, encoding='utf-8')

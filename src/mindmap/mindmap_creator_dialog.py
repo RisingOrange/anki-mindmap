@@ -130,6 +130,9 @@ class MindmapDialog(QDialog):
                     'It seems like you do not have Graphviz installed.\n' +
                     'You can get it from https://graphviz.org/download/.'
                 )
+        except RuntimeError as e: 
+            if e.args[0] == 'too many nodes':
+                showInfo('Stopping because there are too many tags/notes\n (> 250)')
 
 
 class GraphicsView(QGraphicsView):
