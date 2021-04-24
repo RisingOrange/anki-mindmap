@@ -54,20 +54,24 @@ class MindmapDialog(QDialog):
 
     def _setup_tag_prefix_lineedit(self, parent):
         groupbox = QGroupBox()
-        groupbox.setLayout(QVBoxLayout())
         parent.addWidget(groupbox)
+        groupbox.setLayout(QVBoxLayout())
 
         groupbox.layout().addWidget(QLabel("Choose a tag to be in the middle of the mindmap:"))
 
-        lineedit = QLineEdit()
-        lineedit.setValidator(OptionValidator(all_tags_that_have_subtags()))
-        completer = Completer(all_tags_that_have_subtags())
-        lineedit.setCompleter(completer)
-        groupbox.layout().addWidget(lineedit)
+        self.lineedit = QLineEdit()
+        groupbox.layout().addWidget(self.lineedit)
+        self.lineedit.setValidator(OptionValidator(all_tags_that_have_subtags()))
+        self.completer = Completer(all_tags_that_have_subtags())
+        self.lineedit.setCompleter(self.completer)
+        self.lineedit.textChanged.connect(self._text_changed)
 
         groupbox.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
 
-        return lineedit
+        return self.lineedit
+
+    def _text_changed(self):
+        self.completer.update(self.lineedit.text())
 
     # button actions
     def _on_show_button_click(self):
@@ -170,8 +174,19 @@ class GraphicsView(QGraphicsView):
 
 
 class Completer(QCompleter):
-    def __init__(self, *args):
-        super().__init__(*args)
+
+    def __init__(self, data):
+        super().__init__(data)
+        self.options = data
+        self.update('')
+
+    def update(self, text):
+        suggestions = [
+            x for x in self.options
+            if x.startswith(text)
+        ]
+        suggestions = sorted(suggestions, key=lambda x: str(x.count(cfg('tag_seperator'))) + x)
+        self.model().setStringList(suggestions)
 
     # show options when lineedit is clicked even if it is empty
     def eventFilter(self, source, event):
