@@ -1,32 +1,14 @@
 from collections import defaultdict
 
-from anki.utils import isMac
-from aqt import mw
-from PyQt5.QtCore import Qt
-from PyQt5.QtWidgets import QLabel, QProgressBar, QWidget
-
 from ._vendor.brain_dump.graphviz import create_mindmap_img
 from .anki_util import all_tags, get_notes, note_text
 from .config import cfg
+from .progress_widget import get_progress_widget
 from .tree import tree
 from .util import redirect_stderr_to_stdout
 
 NOTE_TEXT_LENGTH_LIMIT = 80
 
-def getProgressWidget():
-    progressWidget = QWidget()
-    progressWidget.setFixedSize(400, 70)
-    progressWidget.setWindowModality(Qt.ApplicationModal)
-    bar = QProgressBar(progressWidget)
-    if isMac:
-        bar.setFixedSize(380, 50)
-    else:
-        bar.setFixedSize(390, 50)
-    bar.move(10, 10)
-    per = QLabel(bar)
-    per.setAlignment(Qt.AlignCenter)
-    progressWidget.show()
-    return progressWidget, bar
 
 class TagMindmap:
 
@@ -41,16 +23,7 @@ class TagMindmap:
     def save_as_img(self, output_file_path, theme, include_notes):
         markdown = self._to_markdown(include_notes)
 
-        widget, bar = getProgressWidget()
-        bar.setMinimum(0)
-        bar.setMaximum(len(markdown.split('\n')))
-        def callback():
-            bar.setValue(callback.i)
-            callback.i += 1
-            if not widget.isVisible():
-                raise Exception('user cancelled drawing')
-            mw.app.processEvents()
-        callback.i = 0
+        widget, callback = get_progress_widget(len(markdown.split('\n')))
 
         with redirect_stderr_to_stdout():
             try:
@@ -61,12 +34,12 @@ class TagMindmap:
                     callback
                 )
             except Exception as e:
-                if e.args and e.args[0] == 'user cancelled drawing':
+                if e.args and e.args[0] == 'user cancelled':
                     print('user cancelled drawing')
                     pass
             finally:
                 widget.close()
-        
+
     def _initialize_tree(self):
         result = tree()
         for path in self._paths():
@@ -88,7 +61,8 @@ class TagMindmap:
                 relative_path = path[len(self.root_path):]
                 while relative_path:
                     result[self.root_path + relative_path].append(note)
-                    relative_path = relative_path.rsplit(self.seperator, maxsplit=1)[0]
+                    relative_path = relative_path.rsplit(
+                        self.seperator, maxsplit=1)[0]
 
         return result
 
