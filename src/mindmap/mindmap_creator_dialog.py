@@ -61,6 +61,7 @@ class MindmapDialog(QDialog):
 
         self.lineedit = QLineEdit()
         groupbox.layout().addWidget(self.lineedit)
+        self.lineedit.setClearButtonEnabled(True)
         self.lineedit.setValidator(OptionValidator(all_tags_that_have_subtags()))
         self.completer = Completer(all_tags_that_have_subtags())
         self.lineedit.setCompleter(self.completer)
