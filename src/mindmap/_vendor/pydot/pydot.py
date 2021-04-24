@@ -245,7 +245,7 @@ def quote_if_necessary(s):
             return 'True'
         return 'False'
 
-    if not isinstance( s, str_type):
+    if not isinstance(s, str_type):
         return s
 
     if not s:
@@ -1863,7 +1863,6 @@ class Dot(Graph):
 
         # temp file
         tmp_fd, tmp_name = tempfile.mkstemp()
-        os.close(tmp_fd)
         self.write(tmp_name, encoding=encoding)
         tmp_dir = os.path.dirname(tmp_name)
 
@@ -1895,6 +1894,8 @@ class Dot(Graph):
                 raise OSError(*args)
             else:
                 raise
+        finally:
+            os.close(tmp_fd)
 
         # clean file litter
         for img in self.shape_files:
