@@ -52,7 +52,7 @@ class Theme:
     def node_style(self, node, graph):
         node_text = ' '.join(node.content.strip().split()[:-1])
         label = (
-            '\"' + node_text + '\"' # this prevents parsing issues in pydot
+            pydot.quote_if_necessary(node_text)
             if node_text and node_text != node.ROOT_DEFAULT_NAME
             else ''
         )
@@ -101,7 +101,7 @@ def create_mindmap_img(graph_markdown, output_file_path, theme, iter_callback, r
 
     for node in graph:
         # avoid erroneous pydot 'port' detection + workaround this: https://github.com/erocarrera/pydot/issues/187
-        content = pydot.quote_if_necessary('\"' + node.content + '\"')
+        content = pydot.quote_if_necessary(node.content)
         pygraph.add_node(pydot.Node(
             content, **theme.node_style(node, graph)))
         if node.parent:
