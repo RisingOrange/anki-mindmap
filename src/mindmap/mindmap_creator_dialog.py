@@ -107,7 +107,7 @@ class MindmapDialog(QDialog):
 
     def _warn_if_include_notes_checked(self):
         showInfo(textwrap.dedent('''\
-            The "include notes" option is not really supported yet, it just works with Basic and Cloze notes.
+            The "include notes" option works with Basic and Cloze notes + any note that has a field named "Front".
             The text from the front of these notes is shown on the mindmap. The text of all other notes is not. 
         '''))
 
