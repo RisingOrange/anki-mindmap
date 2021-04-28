@@ -62,17 +62,12 @@ class MindmapDialog(QDialog):
         self.lineedit = QLineEdit()
         groupbox.layout().addWidget(self.lineedit)
         self.lineedit.setClearButtonEnabled(True)
-        self.lineedit.setValidator(OptionValidator(all_tags_that_have_subtags()))
-        self.completer = Completer(all_tags_that_have_subtags())
+        self.completer = Completer(self.lineedit, all_tags_that_have_subtags())
         self.lineedit.setCompleter(self.completer)
-        self.lineedit.textChanged.connect(self._text_changed)
 
         groupbox.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
 
         return self.lineedit
-
-    def _text_changed(self):
-        self.completer.update(self.lineedit.text())
 
     # button actions
     def _on_show_button_click(self):
@@ -176,42 +171,24 @@ class GraphicsView(QGraphicsView):
 
 class Completer(QCompleter):
 
-    def __init__(self, data):
-        super().__init__(data)
-        self.options = data
-        self.update('')
+    def __init__(self, lineedit, options):
+        super().__init__(options)
 
-    def update(self, text):
-        suggestions = [
-            x for x in self.options
-            if x.startswith(text)
-        ]
-        suggestions = sorted(suggestions, key=lambda x: str(x.count(cfg('tag_seperator'))) + x)
-        self.model().setStringList(suggestions)
+        self.lineedit = lineedit
+
+        self.setFilterMode(Qt.MatchContains)
+        self.setCaseSensitivity(Qt.CaseInsensitive)
+
+        sorted_options = sorted(options, key=lambda x: str(x.count(cfg('tag_seperator'))) + x)
+        self.model().setStringList(sorted_options)
 
     # show options when lineedit is clicked even if it is empty
     def eventFilter(self, source, event):
         if event.type() == QEvent.MouseButtonPress:
+            self.setCompletionPrefix(self.lineedit.text())
             self.complete()
 
         return super().eventFilter(source, event)
-
-
-class OptionValidator(QValidator):
-
-    def __init__(self, options):
-        super().__init__()
-        self.options = set(options)
-
-    def validate(self, string, pos):
-        if string in self.options:
-            return (QValidator.State.Acceptable, string, pos)
-
-        for option in self.options:
-            if option.startswith(string):
-                return (QValidator.State.Intermediate, string, pos)
-
-        return (QValidator.State.Invalid, string, pos)
 
 
 def make_button(txt, f, parent):
