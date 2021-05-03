@@ -128,7 +128,8 @@ class MindmapDialog(QDialog):
             if e.args[1] == '"dot" not found in path.':
                 showInfo(
                     'It seems like you do not have Graphviz installed.\n' +
-                    'You can get it from https://graphviz.org/download/.'
+                    'You can get it from https://graphviz.org/download/.\n'
+                    'Make sure it is on the PATH.'
                 )
 
 class GraphicsView(QGraphicsView):
