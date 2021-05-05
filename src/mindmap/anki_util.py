@@ -46,13 +46,9 @@ def all_tags():
     return _all_partial_paths(mw.col.tags.all(), cfg('tag_seperator'))
 
 
-def all_tags_that_have_subtags():
-    return _all_partial_paths(mw.col.tags.all(), cfg('tag_seperator'), omit_leafs=True)
-
-
-def _all_partial_paths(paths, seperator, omit_leafs=False):
+def _all_partial_paths(paths, seperator):
     return set((
         seperator.join(string.split(seperator)[:i])
         for string in paths
-        for i in range(1, len(string.split(seperator)) + (1 if not omit_leafs else 0))
+        for i in range(1, len(string.split(seperator)) + 1)
     ))

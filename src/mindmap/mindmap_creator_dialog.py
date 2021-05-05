@@ -11,7 +11,7 @@ from PyQt5.QtSvg import QGraphicsSvgItem
 from PyQt5.QtWidgets import *
 
 from ._vendor.brain_dump.graphviz import THEMES, theme
-from .anki_util import all_tags_that_have_subtags
+from .anki_util import all_tags
 from .config import cfg
 from .mindmap import TagMindmap
 
@@ -62,7 +62,7 @@ class MindmapDialog(QDialog):
         self.lineedit = QLineEdit()
         groupbox.layout().addWidget(self.lineedit)
         self.lineedit.setClearButtonEnabled(True)
-        self.completer = Completer(self.lineedit, all_tags_that_have_subtags())
+        self.completer = Completer(self.lineedit, all_tags())
         self.lineedit.setCompleter(self.completer)
 
         groupbox.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
@@ -95,7 +95,7 @@ class MindmapDialog(QDialog):
 
     # helper functions
     def _warn_if_invalid_tag(self):
-        if self.tag_prefix_lineedit.text() not in all_tags_that_have_subtags():
+        if self.tag_prefix_lineedit.text() not in all_tags():
             showInfo('Please enter a valid tag')
             return True
         return False
