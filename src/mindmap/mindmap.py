@@ -66,8 +66,10 @@ class TagMindmap:
         return result
 
     def _percentage_of_notes_by_path(self, path):
-        notes_total_amount = len(self.notes_by_path[self.root_path])
         cur_path_amount = len(self.notes_by_path[self._with_root_path(path)])
+        notes_total_amount = len(self.notes_by_path[self.root_path])
+
+        if notes_total_amount == 0: return 0
         return cur_path_amount / notes_total_amount
 
     def _to_markdown(self, include_notes):
