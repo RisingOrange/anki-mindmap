@@ -115,22 +115,14 @@ class TagMindmap:
         return cur
 
     def _starts_with_root_path(self, path):
-        root_parts = self.root_path.split(self.seperator)
-        path_parts = path.split(self.seperator)
-
-        if len(path_parts) < len(root_parts):
-            return False
-
-        return all([
-            a == b
-            for a, b in
-            zip(root_parts, path_parts)
-        ])
+        return path == self.root_path or path.startswith(self.root_path + self.seperator)
 
     def _without_root_path(self, path):
+        # if root_path is a::b and path is a::b::c the result is b::c 
         root_depth = len(self.root_path.split(self.seperator))
         return self.seperator.join(path.split(self.seperator)[root_depth-1:])
 
     def _with_root_path(self, path):
+        # if root path is a::b and path is b::c the result is a::b::c
         path_from_root = self.seperator.join(path.split(self.seperator)[1:])
         return self.root_path + (self.seperator + path_from_root if path_from_root else '')

@@ -47,8 +47,8 @@ def all_tags():
 
 
 def _all_partial_paths(paths, seperator):
-    return set((
-        seperator.join(string.split(seperator)[:i])
-        for string in paths
-        for i in range(1, len(string.split(seperator)) + 1)
-    ))
+    return set(
+        seperator.join(path.split(seperator)[:i])
+        for path in paths
+        for i in range(1, len(path.split(seperator)) + 1)
+    )
