@@ -36,6 +36,8 @@ class TagMindmap:
             except Exception as e:
                 if e.args and e.args[0] == 'user cancelled':
                     print('user cancelled drawing')
+                else:
+                    raise e
             finally:
                 widget.close()
 
