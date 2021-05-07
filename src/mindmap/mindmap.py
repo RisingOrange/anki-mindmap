@@ -71,7 +71,8 @@ class TagMindmap:
         cur_path_amount = len(self.notes_by_path[self._with_root_path(path)])
         notes_total_amount = len(self.notes_by_path[self.root_path])
 
-        if notes_total_amount == 0: return 0
+        if notes_total_amount == 0:
+            return 0
         return cur_path_amount / notes_total_amount
 
     def _to_markdown(self, include_notes):
@@ -120,7 +121,7 @@ class TagMindmap:
         return path == self.root_path or path.startswith(self.root_path + self.seperator)
 
     def _without_root_path(self, path):
-        # if root_path is a::b and path is a::b::c the result is b::c 
+        # if root_path is a::b and path is a::b::c the result is b::c
         root_depth = len(self.root_path.split(self.seperator))
         return self.seperator.join(path.split(self.seperator)[root_depth-1:])
 

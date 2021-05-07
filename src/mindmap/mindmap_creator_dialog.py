@@ -76,7 +76,6 @@ class MindmapDialog(QDialog):
         if self.with_notes_cb.isChecked():
             self._warn_if_include_notes_checked()
 
-
         self.viewer = GraphicsView()
         with tempfile.NamedTemporaryFile() as f:
             self._save_mindmap_to_file(f.name)
@@ -132,6 +131,7 @@ class MindmapDialog(QDialog):
                     'Make sure it is on the PATH.'
                 )
 
+
 class GraphicsView(QGraphicsView):
 
     def __init__(self, *args):
@@ -162,7 +162,8 @@ class GraphicsView(QGraphicsView):
         scene_pos = self.mapToScene(view_pos)
         self.centerOn(scene_pos)
         self.scale(factor, factor)
-        delta = self.mapToScene(view_pos) - self.mapToScene(self.viewport().rect().center())
+        delta = self.mapToScene(
+            view_pos) - self.mapToScene(self.viewport().rect().center())
         self.centerOn(scene_pos - delta)
 
 
@@ -176,7 +177,8 @@ class Completer(QCompleter):
         self.setFilterMode(Qt.MatchContains)
         self.setCaseSensitivity(Qt.CaseInsensitive)
 
-        sorted_options = sorted(options, key=lambda x: str(x.count(cfg('tag_seperator'))) + x)
+        sorted_options = sorted(options, key=lambda x: str(
+            x.count(cfg('tag_seperator'))) + x)
         self.model().setStringList(sorted_options)
 
     # show options when lineedit is clicked even if it is empty
