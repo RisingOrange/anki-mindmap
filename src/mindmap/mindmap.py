@@ -31,7 +31,8 @@ class TagMindmap:
                     markdown,
                     output_file_path,
                     theme,
-                    callback
+                    callback,
+                    pydot_program=cfg('path_to_dot')
                 )
             except Exception as e:
                 if e.args and e.args[0] == 'user cancelled':

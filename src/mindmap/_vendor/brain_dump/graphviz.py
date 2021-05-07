@@ -91,8 +91,8 @@ def theme(name, scale_branches):
         return class_('white', 'black', Theme.BRIGHT_EDGE_COLORS)
 
 
-def create_mindmap_img(graph_markdown, output_file_path, theme, iter_callback, root_label=None):
-    graph = parse_text_graph(graph_markdown, root_label=root_label)
+def create_mindmap_img(graph_markdown, output_file_path, theme, iter_callback, pydot_program):
+    graph = parse_text_graph(graph_markdown)
     pygraph = pydot.Dot(root=graph.content, **theme.graph_style)
 
     for node in graph:
@@ -109,4 +109,4 @@ def create_mindmap_img(graph_markdown, output_file_path, theme, iter_callback, r
 
         iter_callback()
 
-    pygraph.write_svg(output_file_path, encoding='utf-8')
+    pygraph.write_svg(output_file_path, prog=pydot_program, encoding='utf-8')

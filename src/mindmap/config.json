@@ -1,3 +1,4 @@
 {
-    "tag_seperator" : "::"
+    "tag_seperator" : "::",
+    "path_to_dot" : "dot"
 }

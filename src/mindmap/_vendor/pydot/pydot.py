@@ -1758,7 +1758,7 @@ class Dot(Graph):
 
         # temp file
         tmp_fd, tmp_name = tempfile.mkstemp()
-        self.write(tmp_name, encoding=encoding)
+        self.write(tmp_name, encoding=encoding, prog=prog)
         tmp_dir = os.path.dirname(tmp_name)
 
         # For each of the image files...
