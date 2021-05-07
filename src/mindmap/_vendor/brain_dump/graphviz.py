@@ -51,11 +51,7 @@ class Theme:
 
     def node_style(self, node, graph):
         node_text = ' '.join(node.content.strip().split()[:-1])
-        label = (
-            pydot.quote_if_necessary(node_text)
-            if node_text and node_text != node.ROOT_DEFAULT_NAME
-            else ''
-        )
+        label = pydot.quote(node_text)
         return dict(
             group=node.branch_id,
             shape='plaintext',
@@ -100,8 +96,7 @@ def create_mindmap_img(graph_markdown, output_file_path, theme, iter_callback, r
     pygraph = pydot.Dot(root=graph.content, **theme.graph_style)
 
     for node in graph:
-        # avoid erroneous pydot 'port' detection + workaround this: https://github.com/erocarrera/pydot/issues/187
-        content = pydot.quote_if_necessary(node.content)
+        content = pydot.quote(node.content)
         pygraph.add_node(pydot.Node(
             content, **theme.node_style(node, graph)))
         if node.parent:
