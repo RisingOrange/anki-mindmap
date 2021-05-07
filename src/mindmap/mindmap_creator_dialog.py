@@ -130,6 +130,8 @@ class MindmapDialog(QDialog):
                     'You can get it from https://graphviz.org/download/.\n'
                     'Make sure it is on the PATH.'
                 )
+            else:
+                raise e
 
 
 class GraphicsView(QGraphicsView):
