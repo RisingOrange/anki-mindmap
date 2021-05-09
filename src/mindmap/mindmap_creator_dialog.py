@@ -90,7 +90,8 @@ class MindmapDialog(QDialog):
             self._warn_if_include_notes_checked()
 
         file_name = self._show_save_file_dialog()
-        self._save_mindmap_to_file(file_name)
+        if file_name:
+            self._save_mindmap_to_file(file_name)
 
     # helper functions
     def _warn_if_invalid_tag(self):
