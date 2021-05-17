@@ -13,6 +13,7 @@ from PyQt5.QtWidgets import *
 from ._vendor.brain_dump.graphviz import THEMES, theme
 from .anki_util import all_tags
 from .config import cfg
+from .labeled_slider import LabeledSlider
 from .mindmap import TagMindmap
 
 
@@ -36,7 +37,7 @@ class MindmapDialog(QDialog):
         self.theme_picker.addItems(THEMES)
         layout.addWidget(self.theme_picker)
 
-        # add "include notes" checkbox
+        # add "more notes - bigger branch" checkbox
         self.scale_branches_cb = QCheckBox('more notes - bigger branch')
         self.scale_branches_cb.move(10, 0)
         self.scale_branches_cb.adjustSize()
@@ -48,9 +49,19 @@ class MindmapDialog(QDialog):
         self.with_notes_cb.adjustSize()
         layout.addWidget(self.with_notes_cb)
 
+        # add max depth slider
+        groupbox = QGroupBox()
+        layout.addWidget(groupbox)
+        groupbox.setLayout(QVBoxLayout())
+        groupbox.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
+        groupbox.layout().addWidget(QLabel("Maximal Branch Depth (decrease this if mindmap is too large)"))
+        self.max_depth_slider = LabeledSlider(1, 5, 1, Qt.Horizontal)
+        self.max_depth_slider.setValue(3)
+        groupbox.layout().addWidget(self.max_depth_slider)
+
         # add buttons
-        layout.add = make_button("Show", self._on_show_button_click, layout)
-        layout.save = make_button("Save", self._on_save_button_click, layout)
+        layout.add_btn = make_button("Show", self._on_show_button_click, layout)
+        layout.save_btn = make_button("Save", self._on_save_button_click, layout)
 
     def _setup_tag_prefix_lineedit(self, parent):
         groupbox = QGroupBox()
@@ -122,7 +133,8 @@ class MindmapDialog(QDialog):
                 file_name,
                 theme(self.theme_picker.currentText(),
                       self.scale_branches_cb.isChecked()),
-                include_notes=self.with_notes_cb.isChecked()
+                include_notes=self.with_notes_cb.isChecked(),
+                max_depth=self.max_depth_slider.value()
             )
         except OSError as e:
             if e.args[1] == '"dot" not found in path.':

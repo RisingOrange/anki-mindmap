@@ -20,8 +20,8 @@ class TagMindmap:
         self.tree = self._initialize_tree()
         self.notes_by_path = self._initialize_notes_by_path()
 
-    def save_as_img(self, output_file_path, theme, include_notes):
-        markdown = self._to_markdown(include_notes)
+    def save_as_img(self, output_file_path, theme, include_notes, max_depth=None):
+        markdown = self._to_markdown(include_notes, max_depth)
 
         widget, callback = get_progress_widget(len(markdown.split('\n')))
 
@@ -76,30 +76,34 @@ class TagMindmap:
             return 0
         return cur_path_amount / notes_total_amount
 
-    def _to_markdown(self, include_notes):
-        return self._tree_to_markdown(self.tree, include_notes)
+    def _to_markdown(self, include_notes, max_depth):
+        return self._tree_to_markdown(self.tree, include_notes, max_depth=max_depth)
 
-    def _tree_to_markdown(self, tree, include_notes, level=0, path=''):
-        indent = '    ' * level
+    def _tree_to_markdown(self, tree, include_notes, level=0, path='', max_depth=None):
 
         def new_path(key):
             return path + self.seperator + key if path else key
 
-        if include_notes and len(tree) == 0:
+        indent = '    ' * level
+
+        if include_notes and (len(tree) == 0 or level > max_depth):
             return '\n'.join([
                 f'{indent}{note_text(note).strip()} 0'
                 for note in self.notes_by_path[self._with_root_path(path)]
                 if note_text(note)
             ])
-        else:
-            return '\n'.join([
-                (f'{indent}{key.strip()} {self._percentage_of_notes_by_path(new_path(key))}\n' +
-                 self._tree_to_markdown(
-                     subtree, include_notes, level+1, new_path(key))
-                 ).strip('\n')
-                for key, subtree in tree.items()
-                if key.strip()
-            ])
+
+        if max_depth is not None and level > max_depth:
+            return ""
+
+        return '\n'.join([
+            (f'{indent}{key.strip()} {self._percentage_of_notes_by_path(new_path(key))}\n' +
+                self._tree_to_markdown(
+                    subtree, include_notes, level+1, new_path(key), max_depth=max_depth)
+                ).strip('\n')
+            for key, subtree in tree.items()
+            if key.strip()
+        ])
 
     def _paths(self):
         return [
