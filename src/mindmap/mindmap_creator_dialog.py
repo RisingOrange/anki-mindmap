@@ -13,78 +13,31 @@ from PyQt5.QtWidgets import *
 from ._vendor.brain_dump.graphviz import THEMES, theme
 from .anki_util import all_tags
 from .config import cfg
-from .labeled_slider import LabeledSlider
+from .gui.forms.anki21.dialog import Ui_Dialog
 from .mindmap import TagMindmap
 
 
 class MindmapDialog(QDialog):
-
-    window_title = 'Mindmap Creator'
-
     def __init__(self, parent=None):
-        super(MindmapDialog, self).__init__(parent)
+        QDialog.__init__(self, parent, Qt.Window)
+        self.parent = parent
 
-        self.resize(500, 300)
-        self.setWindowTitle(self.window_title)
+        self.dialog = Ui_Dialog()
+        self.dialog.setupUi(self)
 
-        layout = QVBoxLayout(self)
-        self.setLayout(layout)
+        self.completer = Completer(self.dialog.tag_prefix_lineedit, all_tags())
+        self.dialog.tag_prefix_lineedit.setCompleter(self.completer)
 
-        # add "tag prefix lineedit"
-        self.tag_prefix_lineedit = self._setup_tag_prefix_lineedit(layout)
+        self.dialog.theme_picker.addItems(THEMES)
 
-        self.theme_picker = QComboBox()
-        self.theme_picker.addItems(THEMES)
-        layout.addWidget(self.theme_picker)
-
-        # add "more notes - bigger branch" checkbox
-        self.scale_branches_cb = QCheckBox('more notes - bigger branch')
-        self.scale_branches_cb.move(10, 0)
-        self.scale_branches_cb.adjustSize()
-        layout.addWidget(self.scale_branches_cb)
-
-        # add "include notes" checkbox
-        self.with_notes_cb = QCheckBox('include notes (experimental)')
-        self.with_notes_cb.move(10, 0)
-        self.with_notes_cb.adjustSize()
-        layout.addWidget(self.with_notes_cb)
-
-        # add max depth slider
-        groupbox = QGroupBox()
-        layout.addWidget(groupbox)
-        groupbox.setLayout(QVBoxLayout())
-        groupbox.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
-        groupbox.layout().addWidget(QLabel("Maximal Branch Depth (decrease this if mindmap is too large)"))
-        self.max_depth_slider = LabeledSlider(1, 5, 1, Qt.Horizontal)
-        self.max_depth_slider.setValue(3)
-        groupbox.layout().addWidget(self.max_depth_slider)
-
-        # add buttons
-        layout.add_btn = make_button("Show", self._on_show_button_click, layout)
-        layout.save_btn = make_button("Save", self._on_save_button_click, layout)
-
-    def _setup_tag_prefix_lineedit(self, parent):
-        groupbox = QGroupBox()
-        parent.addWidget(groupbox)
-        groupbox.setLayout(QVBoxLayout())
-
-        groupbox.layout().addWidget(QLabel("Choose a tag to be in the middle of the mindmap:"))
-
-        self.lineedit = QLineEdit()
-        groupbox.layout().addWidget(self.lineedit)
-        self.lineedit.setClearButtonEnabled(True)
-        self.completer = Completer(self.lineedit, all_tags())
-        self.lineedit.setCompleter(self.completer)
-
-        groupbox.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
-
-        return self.lineedit
+        self.dialog.show_btn.clicked.connect(self._on_show_button_click)
+        self.dialog.save_btn.clicked.connect(self._on_save_button_click)
 
     # button actions
     def _on_show_button_click(self):
         if self._warn_if_invalid_tag():
             return
-        if self.with_notes_cb.isChecked():
+        if self.dialog.with_notes_cb.isChecked():
             self._warn_if_include_notes_checked()
 
         self.viewer = GraphicsView()
@@ -97,7 +50,7 @@ class MindmapDialog(QDialog):
     def _on_save_button_click(self):
         if self._warn_if_invalid_tag():
             return
-        if self.with_notes_cb.isChecked():
+        if self.dialog.with_notes_cb.isChecked():
             self._warn_if_include_notes_checked()
 
         file_name = self._show_save_file_dialog()
@@ -106,7 +59,7 @@ class MindmapDialog(QDialog):
 
     # helper functions
     def _warn_if_invalid_tag(self):
-        if self.tag_prefix_lineedit.text() not in all_tags():
+        if self.dialog.tag_prefix_lineedit.text() not in all_tags():
             showInfo('Please enter a valid tag')
             return True
         return False
@@ -118,23 +71,23 @@ class MindmapDialog(QDialog):
         '''))
 
     def _show_save_file_dialog(self):
-        last_part_of_tag = self.tag_prefix_lineedit.text().split(
+        last_part_of_tag = self.dialog.tag_prefix_lineedit.text().split(
             cfg('tag_seperator'))[-1]
         suggested_filename = last_part_of_tag + \
-            ('_with_notes' if self.with_notes_cb.isChecked() else '') + '.svg'
+            ('_with_notes' if self.dialog.with_notes_cb.isChecked() else '') + '.svg'
         result, _ = QFileDialog.getSaveFileName(
             self, "", suggested_filename, "*.svg")
         return result
 
     def _save_mindmap_to_file(self, file_name):
-        mindmap = TagMindmap(self.tag_prefix_lineedit.text())
+        mindmap = TagMindmap(self.dialog.tag_prefix_lineedit.text())
         try:
             mindmap.save_as_img(
                 file_name,
-                theme(self.theme_picker.currentText(),
-                      self.scale_branches_cb.isChecked()),
-                include_notes=self.with_notes_cb.isChecked(),
-                max_depth=self.max_depth_slider.value()
+                theme(self.dialog.theme_picker.currentText(),
+                      self.dialog.scale_branches_cb.isChecked()),
+                include_notes=self.dialog.with_notes_cb.isChecked(),
+                max_depth=self.dialog.max_depth_slider.value()
             )
         except OSError as e:
             if e.args[1] == '"dot" not found in path.':
