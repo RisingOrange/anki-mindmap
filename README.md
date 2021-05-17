@@ -18,3 +18,6 @@ Make sure to check "Add to path for all users" during installation.
 
 #### AnkiWeb
 The easiest way to install Anki-Mindmap is through [AnkiWeb](https://ankiweb.net/shared/info/965278890).
+
+### Acknowledgements
+Drawing of mindmaps is done using https://github.com/Lucas-C/brain_dump
