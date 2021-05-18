@@ -260,7 +260,7 @@
   <customwidget>
    <class>LabeledSlider</class>
    <extends>QSlider</extends>
-   <header>mindmap.labeled_slider.h</header>
+   <header>....labeled_slider.h</header>
   </customwidget>
  </customwidgets>
  <resources/>
