@@ -1,5 +1,6 @@
 import tempfile
 import textwrap
+from pathlib import Path
 
 from anki.lang import _
 from aqt import mw
@@ -43,6 +44,11 @@ class MindmapDialog(QDialog):
         self.viewer = GraphicsView()
         with tempfile.NamedTemporaryFile() as f:
             self._save_mindmap_to_file(f.name)
+
+            # the file is empty when the user cancels the drawing process
+            if Path(f.name).stat().st_size == 0:
+                return
+
             self.viewer.setImg(f.name)
 
         self.viewer.show()
