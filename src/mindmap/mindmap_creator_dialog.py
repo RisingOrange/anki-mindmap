@@ -1,4 +1,3 @@
-import tempfile
 import textwrap
 from pathlib import Path
 
@@ -16,6 +15,7 @@ from .anki_util import all_tags
 from .config import cfg
 from .gui.forms.anki21.dialog import Ui_Dialog
 from .mindmap import TagMindmap
+from .util import CustomNamedTemporaryFile
 
 
 class MindmapDialog(QDialog):
@@ -42,7 +42,7 @@ class MindmapDialog(QDialog):
             self._warn_if_include_notes_checked()
 
         self.viewer = GraphicsView()
-        with tempfile.NamedTemporaryFile() as f:
+        with CustomNamedTemporaryFile() as f:
             self._save_mindmap_to_file(f.name)
 
             # the file is empty when the user cancels the drawing process
