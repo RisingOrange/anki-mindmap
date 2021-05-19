@@ -120,6 +120,12 @@ def call_graphviz(program, arguments, working_dir, **kwargs):
 
     program_with_args = [program, ] + arguments
 
+    # this prevents a terminal window showing up for a moment on Windows
+    if os.name == 'nt':
+        startupinfo = subprocess.STARTUPINFO()
+        startupinfo.dwFlags |= subprocess.STARTF_USESHOWWINDOW
+        kwargs['startupinfo'] = startupinfo
+
     process = subprocess.Popen(
         program_with_args,
         env=env,
