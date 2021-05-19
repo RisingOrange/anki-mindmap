@@ -2,7 +2,7 @@
 Anki-Mindmap is an addon for the spaced repetition flashcard app [Anki](https://apps.ankiweb.net/) that allows you to create mindmaps/graphs/visualizations out of tag hierarchies.
 
 ### Results
-![](images/03_Physiology.svg)
+![](images/FirstAid.svg)
 ![](images/ADM.svg)
 ![](images/AlgoDat.svg)
 ![](images/ADM_with_notes.svg)
