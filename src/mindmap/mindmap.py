@@ -106,10 +106,10 @@ class TagMindmap:
         ])
 
     def _paths(self):
-        return [
+        return reversed(sorted([
             path for path in self.all_paths
             if self._starts_with_root_path(path)
-        ]
+        ], key=lambda x: x.lower()))
 
     def _traverse(self, path):
         return self._traverse_tree(self, path)
