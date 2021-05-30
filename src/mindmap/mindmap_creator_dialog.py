@@ -95,6 +95,11 @@ class MindmapDialog(QDialog):
                 include_notes=self.dialog.with_notes_cb.isChecked(),
                 max_depth=self.dialog.max_depth_slider.value()
             )
+
+            # XXX Remove this
+            mindmap.save_as_jsmind('/media/terra/Programming_Projects/anki_addons/mindmap/experiments/result.html',
+                                   include_notes=self.dialog.with_notes_cb.isChecked())
+
         except OSError as e:
             if e.args[1] == '"dot" not found in path.':
                 showInfo(

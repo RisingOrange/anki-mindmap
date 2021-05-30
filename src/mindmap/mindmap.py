@@ -1,4 +1,6 @@
+import json
 from collections import defaultdict
+from pathlib import Path
 
 from ._vendor.brain_dump.graphviz import create_mindmap_img
 from .anki_util import all_tags, get_notes, note_text
@@ -20,6 +22,7 @@ class TagMindmap:
         self.tree = self._initialize_tree()
         self.notes_by_path = self._initialize_notes_by_path()
 
+    # saving to file
     def save_as_img(self, output_file_path, theme, include_notes, max_depth=None):
         markdown = self._to_markdown(include_notes, max_depth)
 
@@ -42,6 +45,96 @@ class TagMindmap:
             finally:
                 widget.close()
 
+    def save_as_jsmind(self, output_file_path, include_notes):
+        jsmind = self._to_mindjs(include_notes=include_notes)
+        jsmind_json = json.dumps(jsmind)
+        with open(Path(__file__).parent / 'jsmind/jsmind_template.html') as f:
+            template = f.read()
+
+        result = template.replace('$PLACEHOLDER$', jsmind_json)
+        with open(output_file_path, 'w') as f:
+            f.write(result)
+
+    def _to_markdown(self, include_notes, max_depth):
+        return self._tree_to_markdown(self.tree, include_notes, max_depth=max_depth)
+
+    def _tree_to_markdown(self, tree, include_notes, level=0, path='', max_depth=None):
+
+        def new_path(key):
+            return path + self.seperator + key if path else key
+
+        indent = '    ' * level
+
+        if include_notes and (len(tree) == 0 or level > max_depth):
+            return '\n'.join([
+                f'{indent}{note_text(note).strip()} 0'
+                for note in self.notes_by_path[self._with_root_path(path)]
+                if note_text(note)
+            ])
+
+        if max_depth is not None and level > max_depth:
+            return ""
+
+        return '\n'.join([
+            (f'{indent}{key.strip()} {self._percentage_of_notes_by_path(new_path(key))}\n' +
+                self._tree_to_markdown(
+                    subtree, include_notes, level+1, new_path(key), max_depth=max_depth)
+             ).strip('\n')
+            for key, subtree in tree.items()
+            if key.strip()
+        ])
+
+    def _to_mindjs(self, topic=None, tree=None, depth=-1, include_notes=False, path=''):
+
+        if topic is None:
+            self._to_mindjs_id = 0
+
+            data = self._to_mindjs(list(self.tree.keys())[
+                                   0], list(self.tree.values())[0], 0, include_notes)
+            return {
+                "meta": {
+                    "name": "jsMind remote",
+                    "author": "hizzgdev@163.com",
+                    "version": "0.2"
+                },
+                "format": "node_tree",
+                "data": data
+            }
+
+        def new_path(key):
+            return path + self.seperator + key if path else key
+
+        def new_node(depth=depth):
+            result = {
+                "id": str(self._to_mindjs_id),
+                "topic": topic,
+                "expanded": depth == 0,
+                "children": list(),
+                "direction": "right"
+            }
+            self._to_mindjs_id += 1
+            return result
+
+        result = new_node()
+
+        if len(tree) == 0 and include_notes:
+            for note in self.notes_by_path[self._with_root_path(path)]:
+
+                text = note_text(note)
+                if not text:
+                    continue
+
+                note = new_node(depth=depth+1)
+                note["topic"] = text
+                result["children"].append(note)
+
+        for topic, subtree in tree.items():
+            result["children"].append(self._to_mindjs(
+                topic, subtree, depth+1, include_notes, new_path(topic)))
+
+        return result
+
+    # building the tree and note data
     def _initialize_tree(self):
         result = tree()
         for path in self._paths():
@@ -76,35 +169,7 @@ class TagMindmap:
             return 0
         return cur_path_amount / notes_total_amount
 
-    def _to_markdown(self, include_notes, max_depth):
-        return self._tree_to_markdown(self.tree, include_notes, max_depth=max_depth)
-
-    def _tree_to_markdown(self, tree, include_notes, level=0, path='', max_depth=None):
-
-        def new_path(key):
-            return path + self.seperator + key if path else key
-
-        indent = '    ' * level
-
-        if include_notes and (len(tree) == 0 or level > max_depth):
-            return '\n'.join([
-                f'{indent}{note_text(note).strip()} 0'
-                for note in self.notes_by_path[self._with_root_path(path)]
-                if note_text(note)
-            ])
-
-        if max_depth is not None and level > max_depth:
-            return ""
-
-        return '\n'.join([
-            (f'{indent}{key.strip()} {self._percentage_of_notes_by_path(new_path(key))}\n' +
-                self._tree_to_markdown(
-                    subtree, include_notes, level+1, new_path(key), max_depth=max_depth)
-                ).strip('\n')
-            for key, subtree in tree.items()
-            if key.strip()
-        ])
-
+    # paths, traversal
     def _paths(self):
         return reversed(sorted([
             path for path in self.all_paths
