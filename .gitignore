@@ -5,6 +5,7 @@ meta.json
 build/
  profile/
 tools/
+experiments/
 
 src/*/gui/forms/anki*
 .qt_for_python/
