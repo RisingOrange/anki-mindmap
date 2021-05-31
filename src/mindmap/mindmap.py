@@ -51,7 +51,9 @@ class TagMindmap:
         with open(Path(__file__).parent / 'jsmind/jsmind_template.html') as f:
             template = f.read()
 
-        result = template.replace('$PLACEHOLDER$', jsmind_json)
+        start_idx = template.find('/* START */')
+        end_idx = template.find('/* END */')
+        result = template[:start_idx] + jsmind_json + template[end_idx:]
         with open(output_file_path, 'w') as f:
             f.write(result)
 
