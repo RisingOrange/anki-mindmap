@@ -112,7 +112,7 @@ class TagMindmap:
                 "id": str(self._to_mindjs_id),
                 "topic": topic,
                 "expanded": depth == 0,
-                "data" : self._with_root_path(path),
+                "data" : f'tag:"{self._with_root_path(path)}"',
                 "children": list(),
                 "direction": "right"
             }
@@ -128,9 +128,10 @@ class TagMindmap:
                 if not text:
                     continue
 
-                note = new_node(depth=depth+1)
-                note["topic"] = text
-                result["children"].append(note)
+                node = new_node(depth=depth+1)
+                node["topic"] = text
+                node["data"] = f'nid:{note.id}'
+                result["children"].append(node)
 
         for topic, subtree in tree.items():
             result["children"].append(self._to_mindjs(
