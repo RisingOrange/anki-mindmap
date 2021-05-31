@@ -91,8 +91,9 @@ class TagMindmap:
         if topic is None:
             self._to_mindjs_id = 0
 
-            data = self._to_mindjs(list(self.tree.keys())[
-                                   0], list(self.tree.values())[0], 0, include_notes)
+            topic = list(self.tree.keys())[0]
+            subtree = list(self.tree.values())[0]
+            data = self._to_mindjs(topic, subtree, 0, include_notes, topic)
             return {
                 "meta": {
                     "name": "jsMind remote",
@@ -111,6 +112,7 @@ class TagMindmap:
                 "id": str(self._to_mindjs_id),
                 "topic": topic,
                 "expanded": depth == 0,
+                "data" : self._with_root_path(path),
                 "children": list(),
                 "direction": "right"
             }
