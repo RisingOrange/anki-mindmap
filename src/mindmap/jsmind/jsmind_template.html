@@ -19,7 +19,9 @@
 <div id="jsmind_container"></div>
 
 <button onclick="show_selected();">see notes</button>
-<div id="note_container" style="overflow-y:scroll;"></div>
+<button id="zoom-in-button" onclick="_jm.view.zoomIn();">+</button>
+<button id="zoom-out-button" onclick="_jm.view.zoomOut();">-</button>
+<input type="range" min="1" max="10" value="1" class="slider" id="collapse_level_slider">
 
 <style type="text/css">
 /*
@@ -3571,7 +3573,6 @@ jmnodes.theme-asbestos jmexpander:hover{}
 
 <script type="text/javascript">
 
-// AnkiConnect
 function invoke(action, version, params={}) {
     return new Promise((resolve, reject) => {
         const xhr = new XMLHttpRequest();
@@ -3603,6 +3604,7 @@ function invoke(action, version, params={}) {
 }
 
 function show_selected(){
+
     var selected_node = _jm.get_selected_node();
     if(!selected_node) return
 
@@ -3610,6 +3612,12 @@ function show_selected(){
         await invoke('guiBrowse', 6, {'query' : selected_node.data.data});
     })()
 }
+
+var slider = document.getElementById("collapse_level_slider");
+slider.oninput = function() {
+    _jm.collapse_all()
+    _jm.expand_to_depth(slider.value)
+} 
 
 var mind = /* START */ {
     "meta": {
