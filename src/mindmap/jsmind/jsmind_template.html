@@ -16,12 +16,12 @@
 </head>
 
 <body>
-<div id="jsmind_container"></div>
+<div id="jsmind-container"></div>
 
 <button onclick="show_selected();">see notes</button>
 <button id="zoom-in-button" onclick="_jm.view.zoomIn();">+</button>
 <button id="zoom-out-button" onclick="_jm.view.zoomOut();">-</button>
-<input type="range" min="1" max="10" value="1" class="slider" id="collapse_level_slider">
+<input type="range" min="1" max="10" value="1" class="slider" id="collapse-level-slider">
 
 <style type="text/css">
 /*
@@ -3613,7 +3613,7 @@ function show_selected(){
     })()
 }
 
-var slider = document.getElementById("collapse_level_slider");
+var slider = document.getElementById("collapse-level-slider");
 slider.oninput = function() {
     _jm.collapse_all()
     _jm.expand_to_depth(slider.value)
@@ -3804,7 +3804,7 @@ var mind = /* START */ {
 }
 /* END */
 var options = {
-    container:'jsmind_container',
+    container:'jsmind-container',
     editable:false,
     theme:'greensea',
     mode:'full',
