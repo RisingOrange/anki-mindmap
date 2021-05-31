@@ -3606,9 +3606,7 @@ function show_selected(){
     var selected_node = _jm.get_selected_node();
     if(!selected_node) return
 
-    // alert(selected_node.topic);
     (async() => {
-        console.log(selected_node.data.data)
         await invoke('guiBrowse', 6, {'query' : selected_node.data.data});
     })()
 }
@@ -3820,8 +3818,6 @@ _jm.show(mind);
 
 (async() => {
     let result = await invoke('requestPermission', 6);
-    result = await invoke('deckNames', 6);
-    console.log(`got list of decks: ${result}`);
 })()
 
 </script>
