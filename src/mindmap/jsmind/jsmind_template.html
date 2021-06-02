@@ -5,24 +5,40 @@
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
     <title>tag mind map</title>
     <style type="text/css">
-        * {
-            box-sizing: border-box;
+        #root-container {
+            display: flex;
         }
         #jsmind-container{
-            float:left;
-            width:70vw;
+            width:80vw;
             height:98vh;
             border:solid 1px #ccc;
             background:#f4f4f4;
+        }
+        #jsmind-nav{
+            margin-top: 10px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding-left: 2vw;
+        }
+        .menu-element{
+            margin-top: 20px;
+            margin-bottom: 20px;
         }
     </style>
 </head>
 
 <body>
+<div id="root-container">
 <div id="jsmind-container"></div>
-
-<button onclick="showNotesInAnki();">see notes</button>
-<input type="range" min="1" max="10" value="1" class="slider" id="collapse-level-slider">
+<div id="jsmind-nav">
+    <button class="menu-element" onclick="showNotesInAnki();">show selected notes in Anki</button>
+    <div class="menu-element" >
+        <div style="padding-bottom: 4px;">Collapse at level</div>
+        <input type="range" min="1" max="7" value="1" class="slider" id="collapse-level-slider">
+    </div>
+</div>
+</div>
 
 <style type="text/css">
 /*
@@ -3578,8 +3594,6 @@ function enableMouseScroll(element){
     let ele = element;
     ele.style.cursor = "grab"
     ele.style.overflow = "auto"
-    ele.scrollTop = 0;
-    ele.scrollLeft = 1;
     let pos = { top: 0, left: 0, x: 0, y: 0 };
     const mouseDownHandler = function(e) { // Change the cursor and prevent user from selecting the text
         ele.style.cursor = 'grabbing';
