@@ -41,17 +41,21 @@ class MindmapDialog(QDialog):
         if self.dialog.with_notes_cb.isChecked():
             self._warn_if_include_notes_checked()
 
-        self.viewer = GraphicsView()
-        with CustomNamedTemporaryFile() as f:
-            self._save_mindmap_to_file(f.name)
+        if self.dialog.tab_widget.currentWidget().objectName() == 'poster':
+            self.viewer = GraphicsView()
+            with CustomNamedTemporaryFile() as f:
+                self._export_poster_mindmap(f.name)
 
-            # the file is empty when the user cancels the drawing process
-            if Path(f.name).stat().st_size == 0:
-                return
+                # the file is empty when the user cancels the drawing process
+                if Path(f.name).stat().st_size == 0:
+                    return
 
-            self.viewer.setImg(f.name)
+                self.viewer.setImg(f.name)
 
-        self.viewer.show()
+            self.viewer.show()
+        else:
+            pass
+
 
     def _on_save_button_click(self):
         if self._warn_if_invalid_tag():
@@ -59,9 +63,15 @@ class MindmapDialog(QDialog):
         if self.dialog.with_notes_cb.isChecked():
             self._warn_if_include_notes_checked()
 
-        file_name = self._show_save_file_dialog()
-        if file_name:
-            self._save_mindmap_to_file(file_name)
+
+        if self.dialog.tab_widget.currentWidget().objectName() == 'poster':
+            file_name = self._show_save_file_dialog('.svg')
+            if file_name:
+                self._export_poster_mindmap(file_name)
+        else:
+            file_name = self._show_save_file_dialog('.html')
+            if file_name:
+                self._export_interactive_mindmap(file_name)
 
     # helper functions
     def _warn_if_invalid_tag(self):
@@ -76,16 +86,16 @@ class MindmapDialog(QDialog):
             The text from the front of these notes is shown on the mindmap. The text of all other notes is not. 
         '''))
 
-    def _show_save_file_dialog(self):
+    def _show_save_file_dialog(self, file_extension):
         last_part_of_tag = self.dialog.tag_prefix_lineedit.text().split(
             cfg('tag_seperator'))[-1]
         suggested_filename = last_part_of_tag + \
-            ('_with_notes' if self.dialog.with_notes_cb.isChecked() else '') + '.svg'
+            ('_with_notes' if self.dialog.with_notes_cb.isChecked() else '') + file_extension
         result, _ = QFileDialog.getSaveFileName(
-            self, "", suggested_filename, "*.svg")
+            self, "", suggested_filename, '*' + file_extension)
         return result
 
-    def _save_mindmap_to_file(self, file_name):
+    def _export_poster_mindmap(self, file_name):
         mindmap = TagMindmap(self.dialog.tag_prefix_lineedit.text())
         try:
             mindmap.save_as_img(
@@ -95,11 +105,6 @@ class MindmapDialog(QDialog):
                 include_notes=self.dialog.with_notes_cb.isChecked(),
                 max_depth=self.dialog.max_depth_slider.value()
             )
-
-            # XXX Remove this
-            mindmap.save_as_jsmind('/media/terra/Programming_Projects/anki_addons/mindmap/experiments/result.html',
-                                   include_notes=self.dialog.with_notes_cb.isChecked())
-
         except OSError as e:
             if e.args[1] == '"dot" not found in path.':
                 showInfo(
@@ -110,6 +115,9 @@ class MindmapDialog(QDialog):
             else:
                 raise e
 
+    def _export_interactive_mindmap(self, file_name):
+        mindmap = TagMindmap(self.dialog.tag_prefix_lineedit.text())
+        mindmap.save_as_jsmind(file_name, include_notes=self.dialog.with_notes_cb.isChecked())
 
 class GraphicsView(QGraphicsView):
 
