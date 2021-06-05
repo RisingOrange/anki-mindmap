@@ -14,8 +14,9 @@ from ._vendor.brain_dump.graphviz import THEMES, theme
 from .anki_util import all_tags
 from .config import cfg
 from .gui.forms.anki21.dialog import Ui_Dialog
+from .libaddon.gui.dialog_webview import WebViewer
 from .mindmap import TagMindmap
-from .util import CustomNamedTemporaryFile
+from .util import CustomNamedTemporaryFile, named_temporary_file
 
 
 class MindmapDialog(QDialog):
@@ -38,10 +39,10 @@ class MindmapDialog(QDialog):
     def _on_show_button_click(self):
         if self._warn_if_invalid_tag():
             return
-        if self.dialog.with_notes_cb.isChecked():
-            self._warn_if_include_notes_checked()
-
         if self.dialog.tab_widget.currentWidget().objectName() == 'poster':
+            if self.dialog.with_notes_cb.isChecked():
+                self._warn_if_include_notes_checked()
+
             self.viewer = GraphicsView()
             with CustomNamedTemporaryFile() as f:
                 self._export_poster_mindmap(f.name)
@@ -54,8 +55,14 @@ class MindmapDialog(QDialog):
 
             self.viewer.show()
         else:
-            pass
-
+            if self.dialog.with_notes_cb_i.isChecked():
+                self._warn_if_include_notes_checked()
+            
+            f = named_temporary_file('anki_mindmap.html', 'w+')
+            self._export_interactive_mindmap(f.name)
+            self.viewer = WebViewer(f'file://{f.name}', 'mind map', self)
+            self.viewer.resize(1000, 600)
+            self.viewer.show()
 
     def _on_save_button_click(self):
         if self._warn_if_invalid_tag():
@@ -117,7 +124,7 @@ class MindmapDialog(QDialog):
 
     def _export_interactive_mindmap(self, file_name):
         mindmap = TagMindmap(self.dialog.tag_prefix_lineedit.text())
-        mindmap.save_as_jsmind(file_name, include_notes=self.dialog.with_notes_cb.isChecked())
+        mindmap.save_as_jsmind(file_name, include_notes=self.dialog.with_notes_cb_i.isChecked())
 
 class GraphicsView(QGraphicsView):
 

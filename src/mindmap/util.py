@@ -42,7 +42,6 @@ def redirect_stderr_to_stdout():
         sys.stderr = stderr
 
 
-
 # from https://stackoverflow.com/questions/23212435/permission-denied-to-write-to-my-temporary-file
 class CustomNamedTemporaryFile:
     """
@@ -69,3 +68,11 @@ class CustomNamedTemporaryFile:
         self._tempFile.close()
         if self._delete:
             os.remove(self._tempFile.name)
+
+
+def named_temporary_file(name, mode):
+    file_name = os.path.join(tempfile.gettempdir(), name)
+    # Ensure the file is created
+    open(file_name, "w").close()
+    # Open the file in the given mode
+    return open(file_name, mode)
