@@ -39,13 +39,13 @@ class MindmapDialog(QDialog):
     def _on_show_button_click(self):
         if self._warn_if_invalid_tag():
             return
-        if self.dialog.tab_widget.currentWidget().objectName() == 'poster':
+        if self.dialog.tab_widget.currentWidget().objectName() == 'image':
             if self.dialog.with_notes_cb.isChecked():
                 self._warn_if_include_notes_checked()
 
             self.viewer = GraphicsView()
             with CustomNamedTemporaryFile() as f:
-                self._export_poster_mindmap(f.name)
+                self._export_image_mindmap(f.name)
 
                 # the file is empty when the user cancels the drawing process
                 if Path(f.name).stat().st_size == 0:
@@ -71,10 +71,10 @@ class MindmapDialog(QDialog):
             self._warn_if_include_notes_checked()
 
 
-        if self.dialog.tab_widget.currentWidget().objectName() == 'poster':
+        if self.dialog.tab_widget.currentWidget().objectName() == 'image':
             file_name = self._show_save_file_dialog('.svg')
             if file_name:
-                self._export_poster_mindmap(file_name)
+                self._export_image_mindmap(file_name)
         else:
             file_name = self._show_save_file_dialog('.html')
             if file_name:
@@ -102,7 +102,7 @@ class MindmapDialog(QDialog):
             self, "", suggested_filename, '*' + file_extension)
         return result
 
-    def _export_poster_mindmap(self, file_name):
+    def _export_image_mindmap(self, file_name):
         mindmap = TagMindmap(self.dialog.tag_prefix_lineedit.text())
         try:
             mindmap.save_as_img(
