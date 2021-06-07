@@ -9,7 +9,7 @@
             display: flex;
         }
         #jsmind-container{
-            width:80vw;
+            max-width: 80vw;
             height:98vh;
             border:solid 1px #ccc;
             background:#f4f4f4;
@@ -4103,13 +4103,15 @@ function setupResizeablePanes(){
 
         // How far the mouse has been moved
         const dx = e.clientX - x;
-        const dy = e.clientY - y;
+        adjustSize(dx);
+    };
 
+    function adjustSize(dx){
         let newLeftWidth = (leftWidth + dx) * 100 / resizer.parentNode.getBoundingClientRect().width;
         let maxWidth = 100 - 100 * rightSide.getBoundingClientRect().width / resizer.parentNode.getBoundingClientRect().width;
         newLeftWidth = Math.min(newLeftWidth, maxWidth);
         leftSide.style.width = `${newLeftWidth}%`;
-    };
+    }
 
     const mouseUpHandler = function() {
         resizer.style.removeProperty('cursor');
@@ -4125,6 +4127,11 @@ function setupResizeablePanes(){
         document.removeEventListener('mousemove', mouseMoveHandler);
         document.removeEventListener('mouseup', mouseUpHandler);
     };
+
+    // fix overflow when page is first opened in a small window
+    let restWidth = rightSide.getBoundingClientRect().width + resizer.getBoundingClientRect().width;
+    let maxWidth = 100 - (100 * restWidth / document.documentElement.clientWidth);
+    leftSide.style.width = `${maxWidth}%`;
 }
 
 var slider = document.getElementById("collapse-level-slider");
