@@ -60,7 +60,13 @@ class MindmapDialog(QDialog):
             
             f = named_temporary_file('anki_mindmap.html', 'w+')
             self._export_interactive_mindmap(f.name)
+
             self.viewer = WebViewer(f'file://{f.name}', 'mind map', self)
+            self.viewer.setWindowFlags(
+                Qt.Window |
+                Qt.WindowTitleHint |
+                Qt.WindowSystemMenuHint
+            )
             self.viewer.resize(1000, 600)
             self.viewer.show()
 
