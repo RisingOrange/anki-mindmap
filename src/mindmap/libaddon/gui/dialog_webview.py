@@ -35,16 +35,14 @@ Simple dialog for viewing a web page
 
 from typing import Optional
 
-from PyQt5.QtCore import QUrl
-from PyQt5.QtWebEngineWidgets import QWebEngineView  # type: ignore
-from PyQt5.QtWidgets import QVBoxLayout, QWidget
-
 from aqt import mw
+from aqt.qt import *
 
 from ..platform import PLATFORM
 from .basic.dialog_basic import BasicDialog
 
 # TODO: Refactor
+
 
 class WebViewer(BasicDialog):
     def __init__(

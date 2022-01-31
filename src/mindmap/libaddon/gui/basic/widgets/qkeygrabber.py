@@ -107,7 +107,7 @@ class QKeyGrab(QDialog):
         mainLayout = QVBoxLayout()
         self.label = QLabel("Please press the key combination\n"
                             "you would like to assign")
-        self.label.setAlignment(Qt.AlignCenter)
+        self.label.setAlignment(Qt.AlignmentFlag.AlignCenter)
         mainLayout.addWidget(self.label)
         self.setLayout(mainLayout)
         self.setWindowTitle("Grab key combination")

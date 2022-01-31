@@ -33,10 +33,9 @@
 Basic QDialog, extended with some quality-of-life improvements
 """
 
-from __future__ import (absolute_import, division,
-                        print_function, unicode_literals)
+from __future__ import absolute_import, division, print_function, unicode_literals
 
-from PyQt5.QtWidgets import QDialog
+from aqt.qt import *
 
 from .interface import CommonWidgetInterface
 
@@ -44,7 +43,6 @@ __all__ = ["BasicDialog"]
 
 
 class BasicDialog(QDialog):
-
     def __init__(self, form_module=None, parent=None, **kwargs):
         super(BasicDialog, self).__init__(parent=parent, **kwargs)
         self.parent = parent

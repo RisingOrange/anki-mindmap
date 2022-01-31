@@ -1,7 +1,6 @@
 import textwrap
 from pathlib import Path
 
-from anki.lang import _
 from aqt import mw
 from aqt.qt import *
 from aqt.utils import showInfo
@@ -14,10 +13,10 @@ from .libaddon.gui.dialog_webview import WebViewer
 from .mindmap import TagMindmap
 from .util import CustomNamedTemporaryFile, named_temporary_file
 
-try:
-    from PyQt5.QtSvg import QGraphicsSvgItem
-except:
-    from PyQt6.QtSvgWidgets import QGraphicsSvgItem
+if qtmajor == 5:
+    from PyQt5.QtSvg import QGraphicsSvgItem  # type: ignore
+else:
+    from PyQt6.QtSvgWidgets import QGraphicsSvgItem  # type: ignore
 
 
 class MindmapDialog(QDialog):
@@ -64,7 +63,9 @@ class MindmapDialog(QDialog):
 
             self.viewer = WebViewer(f"file://{f.name}", "mind map", self)
             self.viewer.setWindowFlags(
-                Qt.WindowType.Window | Qt.WindowTitleHint | Qt.WindowSystemMenuHint
+                Qt.WindowType.Window
+                | Qt.WindowType.WindowTitleHint
+                | Qt.WindowType.WindowSystemMenuHint
             )
             self.viewer.resize(1000, 600)
             self.viewer.show()
@@ -147,14 +148,14 @@ class MindmapDialog(QDialog):
 class GraphicsView(QGraphicsView):
     def __init__(self, *args):
         super().__init__(*args)
-        self.setDragMode(QGraphicsView.ScrollHandDrag)
+        self.setDragMode(QGraphicsView.DragMode.ScrollHandDrag)
 
     def setImg(self, svg_path):
         self.scene = QGraphicsScene()
         item = QGraphicsSvgItem(svg_path)
         self.scene.addItem(item)
         self.setScene(self.scene)
-        self.fitInView(self.scene.sceneRect(), Qt.KeepAspectRatio)
+        self.fitInView(self.scene.sceneRect(), Qt.AspectRatioMode.KeepAspectRatio)
 
     def resizeEvent(self, event):
 
@@ -163,7 +164,7 @@ class GraphicsView(QGraphicsView):
         # this prevents fitInView being called when zooming using the scroll wheel
         # because otherwise fitInView gets called and zooms out again when zooming in on the image
         if abs(event.size().width() - event.oldSize().width()) > 100:
-            self.fitInView(self.scene.sceneRect(), Qt.KeepAspectRatio)
+            self.fitInView(self.scene.sceneRect(), Qt.AspectRatioMode.KeepAspectRatio)
 
     def wheelEvent(self, event):
         factor = 1.1

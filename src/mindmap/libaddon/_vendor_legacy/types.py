@@ -54,11 +54,11 @@ del sys, _f, _g, _C, _c,                           # Not for export
 
 
 # Provide a PEP 3115 compliant mechanism for class creation
-def new_class(name, bases=(), kwds=None, exec_body=None):
+def new_class(name, bases=(), kwds=None, execbody=None):
     """Create a class object dynamically using the appropriate metaclass."""
     meta, ns, kwds = prepare_class(name, bases, kwds)
-    if exec_body is not None:
-        exec_body(ns)
+    if execbody is not None:
+        execbody(ns)
     return meta(name, bases, ns, **kwds)
 
 def prepare_class(name, bases=(), kwds=None):

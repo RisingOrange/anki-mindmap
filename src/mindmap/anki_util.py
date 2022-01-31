@@ -37,7 +37,7 @@ def note_text(note, length_limit=80):
 
 def get_notes(search_string):
     return [ 
-        mw.col.getNote(id) 
+        mw.col.get_note(id) 
         for id in mw.col.find_notes(search_string)
     ]
 

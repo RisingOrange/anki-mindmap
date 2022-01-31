@@ -1,8 +1,6 @@
-
-from anki.utils import isMac
+from anki.utils import is_mac
 from aqt import mw
-from PyQt5.QtCore import Qt
-from PyQt5.QtWidgets import QLabel, QProgressBar, QWidget
+from aqt.qt import *
 
 
 def get_progress_widget(max):
@@ -10,13 +8,13 @@ def get_progress_widget(max):
     progressWidget.setFixedSize(400, 70)
     progressWidget.setWindowModality(Qt.WindowModality.ApplicationModal)
     progressWidget.bar = bar = QProgressBar(progressWidget)
-    if isMac:
+    if is_mac:
         bar.setFixedSize(380, 50)
     else:
         bar.setFixedSize(390, 50)
     bar.move(10, 10)
     per = QLabel(bar)
-    per.setAlignment(Qt.AlignCenter)
+    per.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
     bar.setMinimum(0)
     bar.setMaximum(max)
@@ -27,8 +25,9 @@ def get_progress_widget(max):
         bar.setValue(callback.i)
         callback.i += 1
         if not progressWidget.isVisible():
-            raise Exception('user cancelled')
+            raise Exception("user cancelled")
         mw.app.processEvents()
+
     callback.i = 0
 
     return progressWidget, callback
