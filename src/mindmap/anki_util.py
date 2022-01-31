@@ -8,8 +8,8 @@ from .util import strip_html_tags
 
 def note_text(note, length_limit=80):
     try:
-        model_name = note.model()['name']
-        if model_name == 'Cloze' or model_name.startswith('Cloze-'):
+        note_type_name = note.model()['name']
+        if note_type_name == 'Cloze' or note_type_name.startswith('Cloze-'):
             result = note['Text']
         elif 'Front' in note.keys():
             result = note['Front']

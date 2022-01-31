@@ -1,10 +1,12 @@
 import anki
+from anki.notes import Note
 from aqt import mw
 
 
 def add_compat_aliases_to_anki():
     add_compat_alias(anki.utils, "is_mac", "isMac")
     add_compat_alias(anki.utils, "is_win", "isWin")
+    add_compat_alias(Note, "note_type", "model")
 
 
 def add_compat_aliases_to_aqt():

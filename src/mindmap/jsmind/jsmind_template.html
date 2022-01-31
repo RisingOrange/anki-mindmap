@@ -25,7 +25,7 @@
             flex-direction: column;
             align-items: center;
             padding-left: 2vw;
-            background-color: thistle;
+            background-color: #1abc9c;
             width: 20vw;
         }
         .menu-element{
@@ -48,10 +48,11 @@
 </div>
 
 
+<!-- IMPORTS -->
 <link rel="stylesheet" href="style/jsmind.css"> 
 <script src="js/jsmind.js"></script>
-<script src="js/jsmind_drag_drop.js"></script>
-<script src="js/jmsind_smth.js"></script>
+<script src="js/jsmind.draggable.js"></script>
+<!-- IMPORTS -->
 
 <script type="text/javascript">
 
@@ -159,7 +160,7 @@ slider.oninput = function() {
     _jm.expand_to_depth(slider.value)
 } 
 
-var mind = /* START */ {
+var mind = /* JSMIND_JSON */ {
     "meta": {
         "name": "jsMind remote",
         "author": "hizzgdev@163.com",
@@ -342,7 +343,7 @@ var mind = /* START */ {
         ]
     }
 }
-/* END */
+/* JSMIND_JSON */
 var options = {
     container:'jsmind-container',
     editable:true,
