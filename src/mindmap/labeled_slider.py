@@ -33,7 +33,7 @@ class LabeledSlider(QSlider):
         sr = self.style().subControlRect(QStyle.CC_Slider,
                                          opt, QStyle.SC_SliderHandle, self)
 
-        if self.orientation() == Qt.Horizontal:
+        if self.orientation() == Qt.Orientation.Horizontal:
             sliderLength = sr.width()
             sliderMin = gr.x()
             sliderMax = gr.right() - sliderLength + 1
@@ -42,7 +42,7 @@ class LabeledSlider(QSlider):
             sliderMin = gr.y()
             sliderMax = gr.bottom() - sliderLength + 1
         pr = pos - sr.center() + sr.topLeft()
-        p = pr.x() if self.orientation() == Qt.Horizontal else pr.y()
+        p = pr.x() if self.orientation() == Qt.Orientation.Horizontal else pr.y()
         return QStyle.sliderValueFromPosition(self.minimum(), self.maximum(), p - sliderMin,
                                               sliderMax - sliderMin, opt.upsideDown)
 
@@ -65,7 +65,7 @@ class LabeledSlider(QSlider):
             # get the size of the label
             rect = painter.drawText(QRect(), Qt.TextDontPrint, v_str)
 
-            if self.orientation() == Qt.Horizontal:
+            if self.orientation() == Qt.Orientation.Horizontal:
                 # I assume the offset is half the length of slider, therefore
                 # + length//2
                 x_loc = QStyle.sliderPositionFromValue(

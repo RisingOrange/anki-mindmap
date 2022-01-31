@@ -8,7 +8,7 @@ from PyQt5.QtWidgets import QLabel, QProgressBar, QWidget
 def get_progress_widget(max):
     progressWidget = QWidget()
     progressWidget.setFixedSize(400, 70)
-    progressWidget.setWindowModality(Qt.ApplicationModal)
+    progressWidget.setWindowModality(Qt.WindowModality.ApplicationModal)
     progressWidget.bar = bar = QProgressBar(progressWidget)
     if isMac:
         bar.setFixedSize(380, 50)

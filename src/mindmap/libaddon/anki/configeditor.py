@@ -56,12 +56,12 @@ class ConfigEditor(QDialog):
         self.setWindowTitle("{} Configuration".format(ADDON.NAME))
         self.setupWidgets()
         self.updateText(self.mgr["local"])
-        self.exec_()
+        self.exec()
     
     def setupWidgets(self):
         button_box = self.form.buttonBox
         restore_btn = button_box.addButton(QDialogButtonBox.RestoreDefaults)
-        help_btn = button_box.addButton(QDialogButtonBox.Help)
+        help_btn = button_box.addButton(QDialogButtonBox.StandardButton.Help)
         help_btn.clicked.connect(self.onHelpRequested)
         restore_btn.clicked.connect(self.onRestoreDefaults)
     

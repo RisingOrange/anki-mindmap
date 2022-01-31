@@ -42,7 +42,7 @@ def showInfo(message, parent=None, mode="info", title="Anki"):
     if mode == "info":
         icon = QMessageBox.Information
     elif mode == "warning":
-        icon = QMessageBox.Warning
+        icon = QMessageBox.Icon.Warning
     elif mode == "critical":
         icon = QMessageBox.Critical
 

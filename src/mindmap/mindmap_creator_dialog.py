@@ -21,7 +21,7 @@ from .util import CustomNamedTemporaryFile, named_temporary_file
 
 class MindmapDialog(QDialog):
     def __init__(self, parent=None):
-        QDialog.__init__(self, parent, Qt.Window)
+        QDialog.__init__(self, parent, Qt.WindowType.Window)
         self.parent = parent
 
         self.dialog = Ui_Dialog()
@@ -63,7 +63,7 @@ class MindmapDialog(QDialog):
 
             self.viewer = WebViewer(f'file://{f.name}', 'mind map', self)
             self.viewer.setWindowFlags(
-                Qt.Window |
+                Qt.WindowType.Window |
                 Qt.WindowTitleHint |
                 Qt.WindowSystemMenuHint
             )
@@ -174,8 +174,8 @@ class Completer(QCompleter):
 
         self.lineedit = lineedit
 
-        self.setFilterMode(Qt.MatchContains)
-        self.setCaseSensitivity(Qt.CaseInsensitive)
+        self.setFilterMode(Qt.MatchFlag.MatchContains)
+        self.setCaseSensitivity(Qt.CaseSensitivity.CaseInsensitive)
 
         sorted_options = sorted(options, key=lambda x: str(
             x.count(cfg('tag_seperator'))) + x)
@@ -183,7 +183,7 @@ class Completer(QCompleter):
 
     # show options when lineedit is clicked even if it is empty
     def eventFilter(self, source, event):
-        if event.type() == QEvent.MouseButtonPress:
+        if event.type() == QEvent.Type.MouseButtonPress:
             self.setCompletionPrefix(self.lineedit.text())
             self.complete()
 
