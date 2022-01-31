@@ -3,12 +3,8 @@ from pathlib import Path
 
 from anki.lang import _
 from aqt import mw
+from aqt.qt import *
 from aqt.utils import showInfo
-from PyQt5.QtCore import *
-from PyQt5.QtGui import *
-from PyQt5.QtGui import QImage
-from PyQt5.QtSvg import QGraphicsSvgItem
-from PyQt5.QtWidgets import *
 
 from ._vendor.brain_dump.graphviz import THEMES, theme
 from .anki_util import all_tags
@@ -17,6 +13,11 @@ from .gui.forms.anki21.dialog import Ui_Dialog
 from .libaddon.gui.dialog_webview import WebViewer
 from .mindmap import TagMindmap
 from .util import CustomNamedTemporaryFile, named_temporary_file
+
+try:
+    from PyQt5.QtSvg import QGraphicsSvgItem
+except:
+    from PyQt6.QtSvgWidgets import QGraphicsSvgItem
 
 
 class MindmapDialog(QDialog):
@@ -39,7 +40,7 @@ class MindmapDialog(QDialog):
     def _on_show_button_click(self):
         if self._warn_if_invalid_tag():
             return
-        if self.dialog.tab_widget.currentWidget().objectName() == 'image':
+        if self.dialog.tab_widget.currentWidget().objectName() == "image":
             if self.dialog.with_notes_cb.isChecked():
                 self._warn_if_include_notes_checked()
 
@@ -57,15 +58,13 @@ class MindmapDialog(QDialog):
         else:
             if self.dialog.with_notes_cb_i.isChecked():
                 self._warn_if_include_notes_checked()
-            
-            f = named_temporary_file('anki_mindmap.html', 'w+')
+
+            f = named_temporary_file("anki_mindmap.html", "w+")
             self._export_interactive_mindmap(f.name)
 
-            self.viewer = WebViewer(f'file://{f.name}', 'mind map', self)
+            self.viewer = WebViewer(f"file://{f.name}", "mind map", self)
             self.viewer.setWindowFlags(
-                Qt.WindowType.Window |
-                Qt.WindowTitleHint |
-                Qt.WindowSystemMenuHint
+                Qt.WindowType.Window | Qt.WindowTitleHint | Qt.WindowSystemMenuHint
             )
             self.viewer.resize(1000, 600)
             self.viewer.show()
@@ -76,36 +75,44 @@ class MindmapDialog(QDialog):
         if self.dialog.with_notes_cb.isChecked():
             self._warn_if_include_notes_checked()
 
-
-        if self.dialog.tab_widget.currentWidget().objectName() == 'image':
-            file_name = self._show_save_file_dialog('.svg')
+        if self.dialog.tab_widget.currentWidget().objectName() == "image":
+            file_name = self._show_save_file_dialog(".svg")
             if file_name:
                 self._export_image_mindmap(file_name)
         else:
-            file_name = self._show_save_file_dialog('.html')
+            file_name = self._show_save_file_dialog(".html")
             if file_name:
                 self._export_interactive_mindmap(file_name)
 
     # helper functions
     def _warn_if_invalid_tag(self):
         if self.dialog.tag_prefix_lineedit.text() not in all_tags():
-            showInfo('Please enter a valid tag')
+            showInfo("Please enter a valid tag")
             return True
         return False
 
     def _warn_if_include_notes_checked(self):
-        showInfo(textwrap.dedent('''\
+        showInfo(
+            textwrap.dedent(
+                """\
             The "include notes" option works with Basic and Cloze notes + any note that has a field named "Front".
             The text from the front of these notes is shown on the mindmap. The text of all other notes is not. 
-        '''))
+        """
+            )
+        )
 
     def _show_save_file_dialog(self, file_extension):
         last_part_of_tag = self.dialog.tag_prefix_lineedit.text().split(
-            cfg('tag_seperator'))[-1]
-        suggested_filename = last_part_of_tag + \
-            ('_with_notes' if self.dialog.with_notes_cb.isChecked() else '') + file_extension
+            cfg("tag_seperator")
+        )[-1]
+        suggested_filename = (
+            last_part_of_tag
+            + ("_with_notes" if self.dialog.with_notes_cb.isChecked() else "")
+            + file_extension
+        )
         result, _ = QFileDialog.getSaveFileName(
-            self, "", suggested_filename, '*' + file_extension)
+            self, "", suggested_filename, "*" + file_extension
+        )
         return result
 
     def _export_image_mindmap(self, file_name):
@@ -113,27 +120,31 @@ class MindmapDialog(QDialog):
         try:
             mindmap.save_as_img(
                 file_name,
-                theme(self.dialog.theme_picker.currentText(),
-                      self.dialog.scale_branches_cb.isChecked()),
+                theme(
+                    self.dialog.theme_picker.currentText(),
+                    self.dialog.scale_branches_cb.isChecked(),
+                ),
                 include_notes=self.dialog.with_notes_cb.isChecked(),
-                max_depth=self.dialog.max_depth_slider.value()
+                max_depth=self.dialog.max_depth_slider.value(),
             )
         except OSError as e:
             if e.args[1] == '"dot" not found in path.':
                 showInfo(
-                    'It seems like you do not have Graphviz installed.\n' +
-                    'You can get it from https://graphviz.org/download/.\n'
-                    'Make sure it is on the PATH.'
+                    "It seems like you do not have Graphviz installed.\n"
+                    + "You can get it from https://graphviz.org/download/.\n"
+                    "Make sure it is on the PATH."
                 )
             else:
                 raise e
 
     def _export_interactive_mindmap(self, file_name):
         mindmap = TagMindmap(self.dialog.tag_prefix_lineedit.text())
-        mindmap.save_as_jsmind(file_name, include_notes=self.dialog.with_notes_cb_i.isChecked())
+        mindmap.save_as_jsmind(
+            file_name, include_notes=self.dialog.with_notes_cb_i.isChecked()
+        )
+
 
 class GraphicsView(QGraphicsView):
-
     def __init__(self, *args):
         super().__init__(*args)
         self.setDragMode(QGraphicsView.ScrollHandDrag)
@@ -151,7 +162,7 @@ class GraphicsView(QGraphicsView):
         # the old and new size is sufficiently big
         # this prevents fitInView being called when zooming using the scroll wheel
         # because otherwise fitInView gets called and zooms out again when zooming in on the image
-        if(abs(event.size().width() - event.oldSize().width()) > 100):
+        if abs(event.size().width() - event.oldSize().width()) > 100:
             self.fitInView(self.scene.sceneRect(), Qt.KeepAspectRatio)
 
     def wheelEvent(self, event):
@@ -162,13 +173,13 @@ class GraphicsView(QGraphicsView):
         scene_pos = self.mapToScene(view_pos)
         self.centerOn(scene_pos)
         self.scale(factor, factor)
-        delta = self.mapToScene(
-            view_pos) - self.mapToScene(self.viewport().rect().center())
+        delta = self.mapToScene(view_pos) - self.mapToScene(
+            self.viewport().rect().center()
+        )
         self.centerOn(scene_pos - delta)
 
 
 class Completer(QCompleter):
-
     def __init__(self, lineedit, options):
         super().__init__(options)
 
@@ -177,8 +188,9 @@ class Completer(QCompleter):
         self.setFilterMode(Qt.MatchFlag.MatchContains)
         self.setCaseSensitivity(Qt.CaseSensitivity.CaseInsensitive)
 
-        sorted_options = sorted(options, key=lambda x: str(
-            x.count(cfg('tag_seperator'))) + x)
+        sorted_options = sorted(
+            options, key=lambda x: str(x.count(cfg("tag_seperator"))) + x
+        )
         self.model().setStringList(sorted_options)
 
     # show options when lineedit is clicked even if it is empty
