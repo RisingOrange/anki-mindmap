@@ -15,9 +15,9 @@ from .mindmap_creator_dialog import show as show_dialog
 
 def setup_menu(self: Browser):
     menubar = self.form.menubar
-    menu = menubar.addMenu("Mindmap")
+    menu = menubar.addMenu("Mind map")
 
-    a = menu.addAction("Create a Mindmap")
+    a = menu.addAction("Create a mind map")
     a.triggered.connect(lambda _: show_dialog())
 
 
