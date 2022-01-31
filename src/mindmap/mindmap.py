@@ -169,6 +169,11 @@ class TagMindmap:
                 )
             )
 
+        # put half of the children of the root node on the left side
+        if depth == 0:
+            for child in result["children"][: int(len(result["children"]) / 2)]:
+                child["direction"] = "left"
+
         return result
 
     # building the tree and note data
