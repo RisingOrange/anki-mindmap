@@ -94,4 +94,3 @@ class WebViewer(BasicDialog):
         if path:
             download.setPath(path)
             download.accept()
-            download.finished.connect(self.foo)

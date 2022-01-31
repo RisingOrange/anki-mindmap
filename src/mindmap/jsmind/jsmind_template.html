@@ -45,6 +45,15 @@
         <input type="range" min="1" max="7" value="1" autocomplete="off" class="slider" id="collapse-level-slider">
     </div>
     <button class="menu-element" onclick="saveMindmap();">Save as html</button>
+    <div>
+        <b>Shortcuts</b><br>
+        Add child - Tab<br>
+        Add sibling - Enter<br>
+        Delete node - Delete<br>
+        Rename - F2<br>
+        Toggle - t<br>
+        Arrow keys for navigation<br>
+    </div>
 </div>
 </div>
 
@@ -382,6 +391,20 @@ var options = {
         hspace:10, 			// horizontal spacing between nodes
         vspace:5, 			// vertical spacing between nodes
         pspace:13 			// Horizontal spacing between node and connection line (to place node expander)
+    },
+    shortcut:{
+        enabled: true,
+        mapping: {
+           addchild : 9, 	// <Tab>
+           addbrother : 13, // <Enter>
+           editnode : 113, 	// <F2>
+           delnode : 46, 	// <Delete>
+           toggle : 84, 	// <Space>
+           left : 37, 		// <Left>
+           up : 38, 		// <Up>
+           right : 39, 		// <Right>
+           down : 40, 		// <Down>
+        }
     } 
 };
 var _jm = new jsMind(options);
