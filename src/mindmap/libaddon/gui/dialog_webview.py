@@ -74,8 +74,24 @@ class WebViewer(BasicDialog):
         self._browser = QWebEngineView(self)
         layout.addWidget(self._browser)
 
+        self._browser.page().profile().downloadRequested.connect(
+            self.on_downloadRequested
+        )
+
     def setUrl(self, url: str):
         self._browser.load(QUrl(url))
 
     def _onClose(self):
         mw.gcWindow(self)
+
+    @pyqtSlot("QWebEngineDownloadItem*")
+    def on_downloadRequested(self, download):
+        old_path = download.path()
+        suffix = QFileInfo(old_path).suffix()
+        path, _ = QFileDialog.getSaveFileName(
+            self, "Save File", old_path, "*." + suffix
+        )
+        if path:
+            download.setPath(path)
+            download.accept()
+            download.finished.connect(self.foo)

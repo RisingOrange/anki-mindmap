@@ -58,6 +58,8 @@ class MindmapDialog(QDialog):
             if self.dialog.with_notes_cb_i.isChecked():
                 self._warn_if_include_notes_checked()
 
+            self._warn_interactive_map()
+
             f = named_temporary_file("anki_mindmap.html", "w+")
             self._export_interactive_mindmap(f.name)
 
@@ -75,6 +77,8 @@ class MindmapDialog(QDialog):
             return
         if self.dialog.with_notes_cb.isChecked():
             self._warn_if_include_notes_checked()
+
+        self._warn_interactive_map()
 
         if self.dialog.tab_widget.currentWidget().objectName() == "image":
             file_name = self._show_save_file_dialog(".svg")
@@ -96,9 +100,19 @@ class MindmapDialog(QDialog):
         showInfo(
             textwrap.dedent(
                 """\
-            The "include notes" option works with Basic and Cloze notes + any note that has a field named "Front".
-            The text from the front of these notes is shown on the mindmap. The text of all other notes is not. 
-        """
+                The "include notes" option works with Basic and Cloze notes + any note that has a field named "Front".
+                The text from the front of these notes is shown on the mindmap. The text of all other notes is not. 
+                """
+            )
+        )
+
+    def _warn_interactive_map(self):
+        showInfo(
+            textwrap.dedent(
+                """\
+                Interactive mind maps are an experimental feature and may be not very useful.
+                You can edit them, but the changes will not affect your tags and notes in Anki.
+                """
             )
         )
 

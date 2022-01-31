@@ -44,6 +44,7 @@
         <div style="padding-bottom: 4px;">Collapse at level</div>
         <input type="range" min="1" max="7" value="1" autocomplete="off" class="slider" id="collapse-level-slider">
     </div>
+    <button class="menu-element" onclick="saveMindmap();">Save as html</button>
 </div>
 </div>
 
@@ -152,6 +153,27 @@ function setupMindmapPanAndZoom(){
         else _jm.view.zoomOut()
     }
     jsmind_div.onwheel = zoom;
+}
+
+function saveMindmap(){
+    
+    let newDocument = "<!doctype html>\n" + document.documentElement.outerHTML;
+
+    // replace mindmap data
+    let data = _jm.get_data("node_tree");
+    // .. the ".?" and "$1" are here so that the regex doesn't match itself
+    let mindmapDataRe = RegExp("JSMIND.?_JSON(?:(?:.|[\n\r])+)(JSMIND.?_JSON)");
+    newDocument = newDocument.replace(mindmapDataRe, `$1 */ ${JSON.stringify(data)} /* $1`);
+
+    // remove jsmind inner
+    let jsmindInnerRe = RegExp("(<div id=\"jsmind-container\">).+\n");
+    newDocument = newDocument.replace(jsmindInnerRe, "$1</div>\n");
+
+    // show download dialog for newDocument
+    let a = document.createElement("a");
+    a.href = window.URL.createObjectURL(new Blob([newDocument], {type: "text/plain"}));
+    a.download = `${data["data"]["topic"]}.html`
+    a.click(); 
 }
 
 var slider = document.getElementById("collapse-level-slider");

@@ -69,7 +69,7 @@ class TagMindmap:
         )
 
         template = re.sub(
-            "/\* JSMIND_JSON \*/[\w\W]*/\* JSMIND_JSON \*/",
+            "(?<=/\* JSMIND_JSON \*/)[\w\W]*(?=/\* JSMIND_JSON \*/)",
             lambda _: jsmind_json,  # pass string wrapped in lambda to prevent sub processing escape characters
             template,
         )
