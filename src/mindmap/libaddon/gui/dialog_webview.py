@@ -61,10 +61,12 @@ class WebViewer(BasicDialog):
         else:
             self.setMinimumWidth(500)
             self.setMinimumHeight(600)
+
         if title:
             self.setWindowTitle(title)
         if width and height:
             self.resize(width, height)
+
         self.setUrl(url)
 
     def _setupUI(self):

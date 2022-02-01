@@ -71,8 +71,8 @@ class CustomNamedTemporaryFile:
 
 
 def named_temporary_file(name, mode):
-    file_name = os.path.join(tempfile.gettempdir(), name)
+    file_path = os.path.join(tempfile.gettempdir(), name)
     # Ensure the file is created
-    open(file_name, "w").close()
+    open(file_path, "w").close()
     # Open the file in the given mode
-    return open(file_name, mode)
+    return open(file_path, mode), file_path

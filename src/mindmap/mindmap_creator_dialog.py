@@ -60,15 +60,14 @@ class MindmapDialog(QDialog):
 
             self._warn_interactive_map()
 
-            f = named_temporary_file("anki_mindmap.html", "w+")
-            self._export_interactive_mindmap(f.name)
+            f, file_path = named_temporary_file("anki_mindmap.html", "w+")
+            self._export_interactive_mindmap(file_path)
 
-            self.viewer = WebViewer(f"file://{f.name}", "mind map", self)
-            self.viewer.setWindowFlags(
-                Qt.WindowType.Window
-                | Qt.WindowType.WindowTitleHint
-                | Qt.WindowType.WindowSystemMenuHint
+            backslash = "\\"
+            self.viewer = WebViewer(
+                f"file:///{file_path.replace(backslash, '/')}", "mind map", self
             )
+            self.viewer.setWindowFlags(Qt.WindowType.Window)
             self.viewer.resize(1000, 600)
             self.viewer.show()
 
