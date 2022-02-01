@@ -180,7 +180,7 @@ function saveMindmap(){
 
     // show download dialog for newDocument
     let a = document.createElement("a");
-    a.href = window.URL.createObjectURL(new Blob([newDocument], {type: "text/plain"}));
+    a.href = window.URL.createObjectURL(new Blob([newDocument], {type: "text/html"}));
     a.download = `${data["data"]["topic"]}.html`
     a.click(); 
 }
