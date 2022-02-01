@@ -54,11 +54,11 @@ class TagMindmap:
             template = f.read()
 
         inlined = ""
-        for css_file in jsmind_path.glob("js/*.js"):
-            with open(css_file, "r") as f:
+        for js_file in sorted(jsmind_path.glob("js/*.js")):
+            with open(js_file, "r") as f:
                 inlined += f'<script type="text/javascript">{f.read()}</script>\n'
 
-        for css_file in jsmind_path.glob("style/*.css"):
+        for css_file in sorted(jsmind_path.glob("style/*.css")):
             with open(css_file, "r") as f:
                 inlined += f'<style type="text/css">{f.read()}</style>\n'
 
