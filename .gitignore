@@ -7,5 +7,5 @@ build/
 tools/
 experiments/
 
-src/*/gui/forms/anki*
+src/*/gui/forms/*
 .qt_for_python/

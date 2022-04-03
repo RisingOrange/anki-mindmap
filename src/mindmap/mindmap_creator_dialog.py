@@ -8,7 +8,7 @@ from aqt.utils import showInfo
 from ._vendor.brain_dump.graphviz import THEMES, theme
 from .anki_util import all_tags
 from .config import cfg
-from .gui.forms.anki21.dialog import Ui_Dialog
+from .gui.forms import dialog
 from .libaddon.gui.dialog_webview import WebViewer
 from .mindmap import TagMindmap
 from .util import CustomNamedTemporaryFile, named_temporary_file
@@ -24,7 +24,7 @@ class MindmapDialog(QDialog):
         QDialog.__init__(self, parent, Qt.WindowType.Window)
         self.parent = parent
 
-        self.dialog = Ui_Dialog()
+        self.dialog = dialog.Ui_Dialog()
         self.dialog.setupUi(self)
 
         self.completer = Completer(self.dialog.tag_prefix_lineedit, all_tags())
@@ -76,7 +76,6 @@ class MindmapDialog(QDialog):
             return
         if self.dialog.with_notes_cb.isChecked():
             self._warn_if_include_notes_checked()
-
 
         if self.dialog.tab_widget.currentWidget().objectName() == "image":
             file_name = self._show_save_file_dialog(".svg")
