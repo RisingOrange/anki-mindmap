@@ -77,13 +77,13 @@ class MindmapDialog(QDialog):
         if self.dialog.with_notes_cb.isChecked():
             self._warn_if_include_notes_checked()
 
-        self._warn_interactive_map()
 
         if self.dialog.tab_widget.currentWidget().objectName() == "image":
             file_name = self._show_save_file_dialog(".svg")
             if file_name:
                 self._export_image_mindmap(file_name)
         else:
+            self._warn_interactive_map()
             file_name = self._show_save_file_dialog(".html")
             if file_name:
                 self._export_interactive_mindmap(file_name)
