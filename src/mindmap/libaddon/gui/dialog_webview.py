@@ -86,7 +86,6 @@ class WebViewer(BasicDialog):
     def _onClose(self):
         mw.gcWindow(self)
 
-    @pyqtSlot("QWebEngineDownloadItem*")
     def on_downloadRequested(self, download):
         old_path = download.path()
         suffix = QFileInfo(old_path).suffix()
