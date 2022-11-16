@@ -182,7 +182,10 @@ class GraphicsView(QGraphicsView):
         factor = 1.1
         if event.angleDelta().y() < 0:
             factor = 0.9
-        view_pos = event.pos()
+        try:
+            view_pos = event.pos()
+        except AttributeError:
+            view_pos = event.position().toPoint()
         scene_pos = self.mapToScene(view_pos)
         self.centerOn(scene_pos)
         self.scale(factor, factor)
